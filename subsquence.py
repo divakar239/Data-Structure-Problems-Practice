@@ -137,8 +137,9 @@ def subsets(s):
 # first compute the subsets of A which is s[1:] excluding s[0]
     ss_excl_h = subsets(t)
 # add s[0] to every element of ss_excl_h
+    ss_incl_h = []
     for ss in ss_excl_h:
-        ss_incl_h = ss + [h]
+        ss_incl_h.append(ss + [h])
     #ss_incl_h = (([h] + ss) for ss in ss_excl_h)
     #print(type(ss_incl_h))
     return ss_incl_h + ss_excl_h
@@ -166,24 +167,23 @@ def subsets(s):
 #Given an unsorted array of integers, find the length of the longest consecutive elements sequence. 
 #For example, 
 #Given [100, 4, 200, 1, 3, 2], 
-#The longest consecutive elements sequence is [1, 2, 3, 4]. 
+#The longest consecutive elements sequence is [1, 2, 3, 4] in time:O(n)
 
 def consec_elem(a):
-    d = collections.defaultdict(int)
+    s = set()
     length = 0
-    for e in a:
-        if(d[e] == 0):
-            d[e] = 1;
-   
-    for key in d:
-        if d[key] == 1:
-            print(d[key])
-            length = length + 1
-        else:
-            length = 0
-        
-    return length
     
+    #add all the elements to the set
+    for elem in a:
+        s.add(elem)
+    
+    for i in range(len(a)):
+        if (a[i]-1) not in s:
+            curr_elem = a[i]
+            while curr_elem in s:
+                curr_elem = curr_elem + 1
+            length = max(length,curr_elem - a[i])
+    return length    
 
 #Partition a set into two subsets such that the difference of subset sums is minimum
 #Input:  arr[] = {1, 6, 11, 5} 
@@ -257,3 +257,5 @@ def find_partition(arr,n):
         return False
     else:
         return find_partition_util(arr,n,sum)
+        
+        

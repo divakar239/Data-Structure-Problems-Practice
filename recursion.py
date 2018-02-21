@@ -130,6 +130,14 @@ def get_gcd(a,b):
     else:
         return get_gcd(high%low,low)
 
-        
+#Q Given a distance ‘dist, count total number of ways to cover the distance with 1, 2 and 3 steps.
+def count_dist(dist):
+    if dist<0:
+        return 0
+    if dist == 0:
+        return 1
+    else:
+        return (count_dist(dist - 1) + count_dist(dist - 2) + count_dist(dist - 3))
+
     
      

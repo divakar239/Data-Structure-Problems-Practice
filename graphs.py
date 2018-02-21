@@ -53,6 +53,25 @@ class graph:
                     queue.append(i)
                     visited[i] == True
 
+
+#shortest single source path in unweighted graph: bfs
+    def bfs_shortest_path(s):
+        visited = [False]*(len(self.graph))
+        queue = []
+        distances = [-1]*(len(self.graph))      #distances of all vertices
+        queue.append(s)
+        visited[s] = True
+        distances[s] = 0                        #set distance of the source as 0
+        
+        while(queue):
+            e = queue.pop()
+            for i in graph[e]:
+                if visited[i] == False:
+                    if distances[i] == -1:
+                        distances[i] = distances[e] + 1 #accumulates the sum of distances from the source 
+                        queue.append(i)
+                        visited[i] = True
+
     #Carry out DFS from a source
     def DFS(self,v):
         visited = [False]*(len(self.graph))
@@ -66,8 +85,8 @@ class graph:
             if visited[i] == False:
                 return self.DFS_util(i,visited)
 
-                # 1) Detect a cycle in the graph
-#o detect a back edge, we can keep track of vertices currently in recursion stack of 
+# 1) Detect a cycle in the graph
+#to detect a back edge, we can keep track of vertices currently in recursion stack of 
 #function for DFS traversal. If we reach a vertex that is already in the recursion stack, 
 #then there is a cycle in the tree. The edge that connects current vertex to 
 #the vertex in the recursion stack is back edge. 
@@ -116,8 +135,8 @@ class graph:
             x = self.find_parent(parent, e.v1)
             y = self.find_parent(parent, e.v2)
             if x == y:
-                return True    #back edge detected as the parent and the child have the same parent
-            self.union(i,j)    # else put them both in the same set since they constitute an edge
+                return True          #back edge detected as the parent and the child have the same parent
+            self.union(e.v1,e.v2)    # else put them both in the same set since they constitute an edge
         
 #Count number of forests in a graph:
 #Approach :
@@ -175,16 +194,29 @@ def can_a_beat_b(matches,a,b):
                 return is_reachable_dfs_util(i,dest,visited)
 
 #Single source shortest path of a DAG:
-#        1. Initialse the dist[] for every vertex as INF and the dist[source] = 0
+#        1. Initialse the dist[] : SHORTEST PATH -> INF, LONGEST PATH -> -INF and source -> 0 ALWAYS
 #        2. Perform a topological sort on the graph
 #        3. Process the vertices in topological sort and and for each vertex , update its adjacent vertex with the weight of the edge
 #        4. 
-#            while(stack):  where stack is topologically sorted
-#                i = stack.pop()
-#                for node, weight in graph[i]:
-    #            if dist[node] > dist[i] + weight:
-    #                dist[node] = weight
-    
+    dist = [float("inf")]*len(graph)
+    dist[s] = 0
+    while(stack):
+        node = stack.pop()
+        while(stack):
+            for next,weight in graph[node]:
+                if dist[next] > dist[node] + weight:
+                    dist[next] = dist[node] + weight
+
+#For Single Source Longest Path:
+    dist = [float("-inf")]*len(graph)
+    dist[s] = 0
+    while(stack):
+        node = stack.pop()
+        for next,weight in graph[node]:
+            if dist[next] < dist[node] + weight:
+                dist[next] = dist[node] + weight
+
+        
 # NOTE: since we start with the source and the distance of the source is never INF, due to topological sort dist[i] will never be INF
 # Also, since the node holds its distance from the source, for every consecutive vertex we need to add the dist[i](cumulative sum of all edges from the source) + weight(of the edge)
 
@@ -229,13 +261,6 @@ def union_rank(parents,x,y):
         parents[p1][0] = p2   #set parent of p1 to p2
         parents[p2][1] = parents[p2][1] + 1
         
-
-
-        
-
-
-
-
 
 #Application of DFS
 #1.Topological Sort    -> Normal DFS with a stack that pushes the leaf node.
