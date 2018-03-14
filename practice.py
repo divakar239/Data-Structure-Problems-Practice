@@ -227,8 +227,28 @@ class bst:
 #            else:
 #                l=l+1
 
+import collections
+class Node:
+    def __init__(self,data):
+        self.data = data
+        self.children = collections.defaultdict(lambda:None)
+
+class Trie:
+    def __init__(self):
+        self.root = None
         
-        
+    def insert(self,data):
+        if self.root == None:
+            self.root = Node(data)
+        else:
+            self.insert_node(self.root,data)
+    
+    def insert_node(self,root,data):
+        for key in root.children:
+            if root.children[key] == None:
+                root.children[key] = self.insert(data)
+            break
+        return
             
         
         
