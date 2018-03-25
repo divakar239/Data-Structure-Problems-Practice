@@ -9,8 +9,13 @@ Created on Wed Mar 14 15:49:07 2018
 import math
 import string
 
-# Q1 Check if string is a palindrome
+# NOTE: given a string 's', find the number of palindrome permtations of the string
+    # 1. check if any permutation of the string can be a palindrome i.e
+        # if length is even , then count frequency of every character using a hash map; every character should occur even number of times
+        # if length is odd, then only 1 char should be odd all the other should be even
+    # 2. if the string checks out the palindrome test then the number of palindrome permutations are ((LEN(S)//2)!)
 
+# Q1 Check if string is a palindrome
 def check_palindrome(s):
     for i in range(0,len(s)-1):
         if(s[i] != s[len(s)-1-i]):
@@ -52,3 +57,4 @@ def int_to_string(i):
     is_negative = False
     if i<0:
         i, is_negative = -i, 
+        

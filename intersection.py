@@ -14,10 +14,8 @@ import numpy as np
 def intersection_v1(array1, array2):
     a = np.array(array1)
     b = np.array(array2)
-    
     c = a&b     #intersection
     d = a^b     #non intersection
-    
     return c
     
 
@@ -31,4 +29,19 @@ def intersection_v2(image1, image2):
     dy = min(image1.ymax, image2.ymax) - max(image1.ymin, image2.ymin)
     
     if dx>0 and dy>0:
-        print(dx*dy)
+        return dx * dy
+
+def main() -> object:
+    a=np.array([[1,2,3],[4,5,6],[7,8,9]])
+    b=np.array([[1,2,3],[7,8,9],[4,6,1]])
+
+    rectA = Rectangle(2,3,7,9)
+    rectB = Rectangle(1,4,5,10)
+
+    res_1 = intersection_v1(a,b)
+    res_2 = intersection_v2(rectA,rectB)
+    print(res_1)
+    print(res_2)
+
+if __name__ == "__main__":
+    main()

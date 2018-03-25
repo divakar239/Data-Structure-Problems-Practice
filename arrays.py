@@ -6,13 +6,13 @@ Created on Wed Mar 14 15:49:43 2018
 @author: DK
 """
 
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Feb 18 17:32:21 2018
+##### POINTERS ###############
 
-@author: DK
-"""
+# 1. consider overwriting rather than deleting
+# 2. writing from the back is faster than writing from the front
+# 3. To keep space : O(1) use the array itself for operations by pointers 
+
+##############################
 
 # Q  Implement a function that given an integer array and its length, returns the length of the longest 
 #sequence of alternating odd and even numbers. For instance, in the array 112365546, 
@@ -72,16 +72,20 @@ def dutch_flag_partition(pivot_index,a):
     
     #smaller elements put first
     index_smaller = 0
-    for j in range(index, len(a)):
+    for j in range(len(a)):
         if a[j] < pivot:
             a[j], a[index_smaller] = a[index_smaller],a[j]
-            index_samller = index_smaller + 1
+            index_smaller = index_smaller + 1
+    
     #grouping larger elements
     index_larger = len(a) - 1
     for j in reversed(range(len(a))):
         if a[j] > pivot:
             a[j],a[index_larger] = a[index_larger],a[j]
             index_larger = index_larger - 1
+        elif a[j] < pivot:
+            break
+   
         
 # Q Write a program which takes in an array of digits encoding a non negative decimal "D" and returns
 # D+1 as the result eg [1,2,9] gives [1,3,0]
@@ -98,6 +102,7 @@ def add_one(a):
     if a[0] == 10:
         a[0] = 1
         a.append(0)
+# Variant: same can be used to solve adding two bit strings i.e the technique of changing the first element of the sum array is 2 then change it to 1 and append a 0 to the end.
 
 # Q. remove duplicates from a sorted array : time: O(n) and sapce: O(1)
 def remove_duplicates(a):
@@ -170,16 +175,29 @@ def prime_factors(n):
         factors.append(n)
     return factors
 
+# Check if a number is prime
+def check_prime(n):
+    #check if it is even
+    if n%2 == 0:
+        return False
+    for i in range (3,n):
+        if n%i == 0:
+            return False
+    return True
+    
+# Print all prime numbers till k
+
+
 # remove element at key in space : O(1)
 def remove(a,key):
     for i in range(key+1,len(a)):
-        print(a[i])
+        #print(a[i])
         a[i-1] = a[i]
     a = a[:-1]
     return a
     
 # reorder elements to place even numbers first and odd at the end in space O(1)
-# idea is to miantain 3 partitions in the array, even , odd and unclassified. 
+# idea is to maintain 3 partitions in the array, even , odd and unclassified. 
 # We start with unclassified and use one if the pointer either even or odd as an anchor which proceeds only when the condition at that point is met
 # the other pointer is used to scan its half of the array and shrink the unclassified part of the array by swapping elements with the other pointer
 
@@ -198,4 +216,114 @@ def collect_even_odd(a):
             a[even] = temp
             # 2. make even proceed to continue scan
             even += 1
+
+# Apply a permutation to a given array:
+    # eg array is A = [a b c d] and permutation P = [2 0 1 3]
+    # output should be [b c a d] that is index i in P gives the element P[i] that is mapped to it
+    
+#approach 1: space : O(n)
+def app_perm(A,P):
+    b = A
+    for i in range (len(P)):
+        b[P[i]] = A[i]
+    return b
+    
+# approach 2: space : O(1)
+# idea is a permutation can be split into set of cyclic permutations which are ones that move all elements by a fixed offset
+# each independent cyclic permutation can be applied independently
+# subtract len(A) from the value in P to indicate that the permutation was performed
+
+def app_perm_v2(A,P):
+    for i in range(len(A)):
+        next = i
+        #check if the P[i] permutation is greater than 0 , only then apply it
+        while p[next] >= 0:
+            A[i], A[P[next]] = A[P[next]], A[i]
+            temp = P[next]
+            P[next] -= len(P)
+            next = temp
+
+
+#Q.Count minimum number of subsets with continuous elements: O(nlogn)
+def count_subsets(a):
+    a=a.sort()
+    count = 0
+    for i in range(len(a)):
+        if a[i] != a[i+1]:
+            count += 1
+    return count
+    
+# Q.Smallest subarray with sum greater than a given value
+# Approach 1: O(n^2)
+def smallest_sub(a,s):
+    min_len = len(a) + 1
+    for i in range(len(a)):
+        curr_sum = a[i]
+        for j in range(i+1, len(a)):
+            curr_sum += a[j]
+
+            # to handle negative numbers , ignore curr_sum if it becomes negative
+            if curr_sum < 0:
+                break
+            
+            if curr_sum > s and min_len > j-i:
+                min_len = j-i
+                break
+        return min_len
+
+#Approach O(n)
+def smallest_sub(a,s):
+    min_len = len(a) + 1
+    start, end = 0
+    curr_sum = 0
+    
+    while(end<len(a)):
+        while end<len(a) and curr_sum<s:
+            curr_sum += a[end]
+            end += 1
+            
+        while curr_sum>s and start<len(a):
+            if min > end-start:
+                min = end-start
+            curr_sum - a[start]
+            start += 1
+    return min_len
+       
+
+# Q. sort a stack in place that is using recursion
+def sort_stack(s):
+    if len(s) != 0:
+        e = s.pop()
+        # sort the remaining stack
+        sort_stack(s)
+        # insert the top item back
+        sorted_insert(s,e)
         
+def sorted_insert(s,x):
+    #if the stack is empty or x > top of the stack
+    if len(s) == 0 or x>s[len(s) - 1]:
+        s.append(x)
+        return
+    #if x<top of the stack then remove the top and recur to find the correct position of x
+    else:
+        e = s.pop()
+        sorted_insert(s,x)
+    #once x is inserted push the removed top back to the stack
+    s.append(e)
+    
+# Q. Reverse a stack in place using recursion (same idea as above)
+def reverse_stack(s):
+    if len(s) != 0:
+        e = s.pop()
+        reverse_stack(s)
+        reversed_insert(s,e)
+
+def reversed_insert(s,x):
+    if len(s) == 0:
+        s.append(x)
+        return
+    else:
+        e = pop()
+        reversed_insert(s,x)
+        s.append(e)
+    

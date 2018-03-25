@@ -138,6 +138,10 @@ def count_dist(dist):
         return 1
     else:
         return (count_dist(dist - 1) + count_dist(dist - 2) + count_dist(dist - 3))
-
+        return s
+        
+        
+    
+        
     
      

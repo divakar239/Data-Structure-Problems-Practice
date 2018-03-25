@@ -16,7 +16,7 @@ class bst:
         self.root=None
     
     def insert(self,data):
-        if(self.root==None):
+        if self.root is None:
             self.root=bst_node(data)
         else:
             self.insert_node(self.root,data)
@@ -29,30 +29,31 @@ class bst:
                 root.left=bst_node(data)
                 return
         else:
-            if(root.right!=None):
+            if root.right is not None:
                 self.insert_node(root.right,data)
             else:
                 root.right=bst_node(data)
                 return
 
 # Q2. input BST and num K, and returns the k largest keys (code above)
-# Approach 1: Inorder traversal and print the last k elelments. However, to=is can prove to be very ineffective especially if the length of the left subtree is really large
+# Approach 1: Inorder traversal and print the last k elelments. However, this can prove to be very ineffective especially if the length of the left subtree is really large
 # Approach 2: Reverse inorder but stop as soon as the kth element is hit.
     def reverse_inorder_traversal(self,num):
+        count = 0
         if self.root == None:
             return
         else:
-            return self.reverse_inorder(self.root,num)
+            return self.reverse_inorder(self.root,num,count)
                
-    def reverse_inorder(self,root,k):
-     
+    def reverse_inorder(self,root,k,count):
+        count += 1
         if root == None:
             return
         if root.right != None:
             self.reverse_inorder(root.right,k)
-       
-        if(i<=k):
-            print(root.data)
+        if count>=k:
+            return
+        print(root.data)
         if root.left != None:
             self.reverse_inorder(root.left,k)
    
@@ -131,10 +132,15 @@ class bst:
         lheight = self.height(root.left)
         rheight = self.height(root.right)
         
-        tree_height = max(lheight,rheight) + 1
-        balance_factor = abs(lheight - rheight) 
-        
+        return max(lheight,rheight) + 1      # accumulates the height of the tree
 
+    def balance(self,root):
+        if root == None:
+            return 0
+        l_h = height(root.left)
+        r_h = height(root.right)
+        
+        return abs(l_h - r_h)
     
 
     
@@ -155,7 +161,7 @@ class bst:
 # T(n) = O(n^2) since for every element in preorder/post order we will have to search it up in inorder. Search takes O(n) for 1 element.
 # we can use a hashmap to reduce complexity to O(n)
 
-# For BST we only need the prorde or post order. Inorder is not required.and alone it can't give a unique BST.
+# For BST we only need the pre-order or post-order. Inorder is not required.and alone it can't give a unique BST.
 
 
 #Mirror a BST:
@@ -310,7 +316,7 @@ def tree_max_sum_constant_space(node,n):
         return 0
     curr_sum = 0
     max_val = float("-inf")                        #used to save the max sum of the paths
-    target_leaf = None                 #will record the leaf node of the pat with maximum sum
+    target_leaf = None                 #will record the leaf node of the path with maximum sum
     tree_max_sum_constant_space_util(node,curr_sum,max_val)
     
 def tree_max_sum_constant_space_util(node,curr_sum,max_val):

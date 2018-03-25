@@ -168,6 +168,10 @@ def subsets(s):
 #For example, 
 #Given [100, 4, 200, 1, 3, 2], 
 #The longest consecutive elements sequence is [1, 2, 3, 4] in time:O(n)
+# Approach : 1. Create a hash set to store all elements from constant lookup
+# check if the element is the beginning of the sequence by checking if a[i] - 1 is present in the set
+# If the element is the first , then count number of elements in the consecutive starting with this element
+# if count is more than the current count then uodate the count
 
 def consec_elem(a):
     s = set()
@@ -256,6 +260,227 @@ def find_partition(arr,n):
     if sum%2 == 1:
         return False
     else:
-        return find_partition_util(arr,n,sum)
+        return find_partition_util(arr,n,sum//2)
         
+
+# Longest Substring Without Repeating Characters
+
+# Naive : O(n^3)
+# Approach : create a is_unique function to check if the substring being iterated from a start to end is unique
+# iterate through all substrings and update the length of the substring to the maximum
+
+def longest_substring(s):
+    length = 0
+    for i in range(len(s)):
+        for j in range(i+1, len(s)):
+            if is_unique(s,i,j):
+                length = max(length, j-i)
+                
+    return length
+
+def is_unique(s, start, end):
+    storage = set()             # since it is local to this function, for every new string it always starts empty and breaks as soon as it hits a duplicate character in that substring
+    
+    for i in range(start, end):
+        if s[i] in storage:
+            return False
+        else:    
+            storage.add(s[i])
+    return True
+    
+# To make this O(N^2) in the is_unique function instead of checking the entire substring everytime, just check s[j]
+def longest_substring_v2(s):
+    length = 1
+    
+    if len(s) == 1:
+        return 1
         
+    for i in range(len(s)):
+        storage = set()             # initialising the set evrytime a new substring starts
+        storage.add(s[i])           # always add the first element of the substring in the set when it starts
+        
+        for j in range(i+1, len(s)):
+            if s[j] not in storage:
+                storage.add(s[j])
+                length = max(length, j-i+1)
+            else:
+                break
+    return length
+                
+# Approach 2:
+    # use sliding window: i set to an element while j moves forward checking if the element its on is in the set
+    # if it is it removes the ith element from the set and shifts i to the right by 1
+def longest_substring_v3(s):
+    length = 0
+    i = 0
+    j = 0
+    storage = set()
+    while i<len(s) and j<len(s):
+        if s[j] not in storage:
+            storage.add(s[j])
+            length = max(length, j-i)
+            j += 1
+        else:
+            storage.remove(s[i])
+    return length
+            
+# Q. find longest palindrome substring in a string
+# Approach 1: O(n^3) similar to the above question: loop through the string and check if each substring is a palindrome
+# for this will have to create a palindrome method
+
+
+# Q. find continuous triplet which increases; that is a subarray T:O(n) and space: O(1) uses sliding window
+def increasingTripletContinuous(nums):
+        count = 1
+        i = 0
+        j = 1
+        while i<len(nums) and j<len(nums):
+            
+            if count == 3:
+                return True
+            if nums[i] < nums[j]:
+                count += 1
+                
+            else:
+                count = 1
+                
+                
+            i += 1
+            j += 1
+            
+        return False
+        
+# Q. same as above but a subsequence that is not continuous
+# idea is to find any 3 elements a,b,c such that a<b<c
+def increasingTriplet(nums):
+        a, b = float("inf"), float("inf")
+        
+        for c in nums:
+            #1. use c to find absolute minimum
+            if a >= c:
+                a = c
+            elif b >= c:
+            #2. after absolute minimum find next minimum and set it to b
+                b = c
+            else:  # a < b < c
+            # if none of the above happens that means a and b have been fixed and c is greater than both
+                return True
+        return False
+        
+# Q. remove duplicates and reverse string
+# use the hash map only to keep track of which is duplicate and NOTHING MORE
+# keep adding every element to a list whenever it is first entered into the hash map
+# this will maintain order of the string and remove duplicates
+
+def remove_reverse(s):
+    new_str = []
+    storage = collections.defaultdict(int)
+    for i in range(len(s)):
+        if storage[s[i]] == 0:
+            storage[s[i]] = 1
+            #terminating += 1
+            new_str.append(s[i])
+    for i in reversed(range(len(new_str))):
+        print(new_str[i])
+    return new_str
+        
+    
+# Q. Check for balanced parenthesis
+# create dictionary: key = left parts and value = right parts
+# push all the left parts in a stack
+# for very right part 1.if the stack is empty means that it can't form a pair 2.the popped element popped doesn't match the corresponding value of the key in the storage dictionary
+
+def check_parenthesis(s):
+    left_chars = []
+    storage = {'(':')', '{':'}','[':']'}
+    for char in s:
+        if storage[char]:
+            left_chars.append(char)
+        elif storage[left_chars.pop()] != char or len(left_chars) == 0:
+            return False
+    return True
+
+            
+    
+#Q. group all anagrams together in an array of strings : O(n^2)
+group = collections.namedtuple("group",("sum","index"))
+
+def anagrams(s):
+    res_l=[]
+    b=[]
+    for i in range(len(s)):
+        res = add(s[i])
+        res_l.append(group(res,i))
+    #NOTE: LIST.SORT(0 DOES SORTING IN PLACE AND RETURNS NONE)
+    b = sorted(res_l)
+    return b
+    
+def add(s):
+    r = 0
+    for i in range(len(s)):
+        r += ord(s[i])
+    return r
+    
+
+    # NOTE: given a string 's', find the number of palindrome permtations of the string
+    # 1. check if any permutation of the string can be a palindrome i.e
+        # if length is even , then count frequency of every character using a hash map; every character should occur even number of times
+        # if length is odd, then only 1 char should be odd all the other should be even
+    # 2. if the string checks out the palindrome test then the number of palindrome permutations are ((LEN(S)//2)!)
+
+# Q1 Check if string is a palindrome
+def check_palindrome(s):
+    for i in range(0,len(s)-1):
+        if(s[i] != s[len(s)-1-i]):
+            print("Not Palindrome")
+            return
+    print("Palindrome")
+
+
+# Q. reverse the words in a string:
+    # eg the cat is bad -> bad is cat the
+    
+#def rev_words(sentence):
+#    i = 0
+#    j = 0
+#    s = list(sentence)
+#    
+#    
+#    
+#def reverse(s):
+#    b = list(s)
+#    for k in range(len(s)//2):
+#        tmp = b[len(b)-k-1]
+#        b[len(b)-k-1] = b[k]
+#        b[k] = tmp
+#        print(b)
+#    t = ''.join(b)
+#    return t
+            
+
+def reverse_list(letters, first=0, last=None):
+    "reverses the elements of a list in-place"
+    if last is None:
+        last = len(letters)
+    last -= 1
+    while first < last:
+        letters[first], letters[last] = letters[last], letters[first]
+        first += 1
+        last -= 1
+
+def reverse_words(string):
+    """reverses the words in a string using a list, with each character
+    as a list element"""
+    characters = list(string)
+    reverse_list(characters)
+    first = last = 0
+    while first < len(characters) and last < len(characters):
+        if characters[last] != ' ':
+            last += 1
+            continue
+        reverse_list(characters, first, last)
+        last += 1
+        first = last
+    if first < last:
+        reverse_list(characters, first, last=len(characters))
+    return ''.join(characters)

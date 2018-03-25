@@ -55,7 +55,7 @@ class graph:
 
 
 #shortest single source path in unweighted graph: bfs
-    def bfs_shortest_path(s):
+    def bfs_shortest_path(self,s):
         visited = [False]*(len(self.graph))
         queue = []
         distances = [-1]*(len(self.graph))      #distances of all vertices
@@ -92,13 +92,13 @@ class graph:
 #the vertex in the recursion stack is back edge. 
 #We have used recStack[] array to keep track of vertices in the recursion stack.
     def detect_cycle(self):
-        visted = [False]*self.V
-        rec_stack = [False]*self.V   # keeps track of all vertices in the stack and helps detect cycle
-        for v in V:
+        visited = [False]*len(self.graph)
+        rec_stack = [False]*len(self.graph)   # keeps track of all vertices in the stack and helps detect cycle
+        for v in self.graph:
             if visited[v] == False:
                 return self.detect_cycle_util(v,visited,rec_satck)
             
-    def detect_cycle_util(v,visited,rec_stack):
+    def detect_cycle_util(self,v,visited,rec_stack):
         visited[v] = True
         rec_stack[v] = True
         
@@ -108,7 +108,7 @@ class graph:
                     return True 
             elif rec_stack[node] == True:
                     return True
-        rec_stack[node] == False
+        rec_stack[v] == False
         return False
         
 # Disjoint sets to find cycle in undirected graph
@@ -197,15 +197,14 @@ def can_a_beat_b(matches,a,b):
 #        1. Initialse the dist[] : SHORTEST PATH -> INF, LONGEST PATH -> -INF and source -> 0 ALWAYS
 #        2. Perform a topological sort on the graph
 #        3. Process the vertices in topological sort and and for each vertex , update its adjacent vertex with the weight of the edge
-#        4. 
+#        
     dist = [float("inf")]*len(graph)
     dist[s] = 0
     while(stack):
         node = stack.pop()
-        while(stack):
-            for next,weight in graph[node]:
-                if dist[next] > dist[node] + weight:
-                    dist[next] = dist[node] + weight
+        for next,weight in graph[node]:
+            if dist[next] > dist[node] + weight:
+                dist[next] = dist[node] + weight
 
 #For Single Source Longest Path:
     dist = [float("-inf")]*len(graph)
@@ -235,9 +234,9 @@ def can_a_beat_b(matches,a,b):
 
 
 #Union by Rank and FindParent by path compression
-#Naive implementations take log(n)
+#Naive implementations take O(n)
 #parents list should maintain tuples (parent,rank) for each index(which is the vertex)
-#parents = [(-1,0)]*len(self.graph)   will initialse each vertex's parent as itself and rank as 0
+#parents = [(-1,0)] for _ in range(len(self.graph))]   will initialse each vertex's parent as itself and rank as 0
 
 def find_parent_pc(parents,v):
     if parents[v][0] == -1:
@@ -248,6 +247,8 @@ def find_parent_pc(parents,v):
     #SET THE NODE"S PARENT TO WHAT WE FIND AFTER RECURSION
     # eg parent of 3 is 2, parent of 2 is 1 and parent of 1 is 1 => set is represented by 1 but the set is 3->2->1
     # we find the set representation of 3 as 1 and then set parent of 3 as 1 so that we have 3->1<-2
+
+#Always attach the shorter sets to longer sets
 def union_rank(parents,x,y):
     p1 = find_parent_pc(parents,x)
     p2 = find_parent_pc(parents,y)
@@ -261,6 +262,17 @@ def union_rank(parents,x,y):
         parents[p1][0] = p2   #set parent of p1 to p2
         parents[p2][1] = parents[p2][1] + 1
         
+
+#NOTE:
+    #1. For path compression and union by ranking each vertex needs to store (ran, parent) information with it:
+        # these have to be mutable as rank and parents will change , so do NOT use namedtuples as they are immutable objects
+    
+    #2. to create a list of lists:
+        # l = [[]]*3 will create 3 references to the same list, hence on l[0].append(1) the result will be [[1],[1],[1]]
+        # Use l = [[] for _ in range(3)]
+        
+    #3. list.sort() returns None as it sorts the original list in place:
+        # Use sorted(list) to assign it to a new or temporary array
 
 #Application of DFS
 #1.Topological Sort    -> Normal DFS with a stack that pushes the leaf node.
