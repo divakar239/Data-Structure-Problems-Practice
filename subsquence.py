@@ -10,7 +10,7 @@ def cont_subarray_sum_v1(array, sum):
     for i in range(len(array)):
         temp_sum = 0
         temp_sum = sum - array[i]
-        index = i 
+        index = i
         for j in range(i+1,len(array)):
             if temp_sum == 0:
                 for k in range(i,index + 1):
@@ -19,7 +19,7 @@ def cont_subarray_sum_v1(array, sum):
             temp_sum = temp_sum - array[j]
             index = j
     print("No substring found")
-    
+
 ### Approach number 2
 #   - O(n) as we use the sliding window approach
 #   - Start with two pointers that represent the subarray.
@@ -40,7 +40,7 @@ def cont_subarray_sum_v2(array,sum):
         elif(temp_sum  > sum):
             temp_sum = temp_sum - array[left_ptr]
             left_ptr = left_ptr + 1
-            
+
         else:
             for i in range(left_ptr,right_ptr+1):
                 print(array[i])
@@ -48,7 +48,7 @@ def cont_subarray_sum_v2(array,sum):
     print("No subarray found")
 
 
-    
+
 ### Handling negative numbers
 
 ### Approach 1 : O(n^2) same as above
@@ -57,7 +57,7 @@ def cont_subarray_neg_sum_v1(array, sum):
     for i in range(len(array)):
         temp_sum = 0
         temp_sum = sum - array[i]
-        index = i 
+        index = i
         for j in range(i+1,len(array)):
             if temp_sum == 0:
                 for k in range(i,index + 1):
@@ -66,15 +66,15 @@ def cont_subarray_neg_sum_v1(array, sum):
             temp_sum = temp_sum - array[j]
             index = j
     print("No substring found")
-    
+
 
 ###Approach 2: Since, the array has negative numbers the sliding window can't be used as it
 #it changed the pointers based on the assumption
-#An efficient way is to use a map. 
-#The idea is to maintain sum of elements encountered so far in a variable (say curr_sum). 
-#Let the given number is sum. 
-#Now for each element, we check if curr_sum – sum exists in the map or not. 
-#If we found it in the map that means, we have a subarray present with given sum, else we insert curr_sum into the map and proceed to next element. 
+#An efficient way is to use a map.
+#The idea is to maintain sum of elements encountered so far in a variable (say curr_sum).
+#Let the given number is sum.
+#Now for each element, we check if curr_sum – sum exists in the map or not.
+#If we found it in the map that means, we have a subarray present with given sum, else we insert curr_sum into the map and proceed to next element.
 #If all elements of the array are processed and we didn’t find any subarray with given sum, then subarray doesn’t exists.
 import collections
 
@@ -97,7 +97,7 @@ def cont_subarray_neg_sum_v2(array,sum):
         storage[array[i]] = 1
         #index = i
     print("No subarray found")
-    
+
 
 
 ### Q Find all possible subsequences of an array ###
@@ -119,10 +119,10 @@ def count_subsequences(array):
         #print('test')
 #Check if jth bit in the counter is set, If set then print jth element from arr[]
         for j in range(0, len(array)):
-            if i&(1<<j):                    # this shifts 1 right by current value of 'j' which aims to iterate through all 'n' positions for 1 subset          
+            if i&(1<<j):                    # this shifts 1 right by current value of 'j' which aims to iterate through all 'n' positions for 1 subset
                 print(str(array[j]) + " ")
         print('\n')
-        
+
 ### Approach 2 (recursion)
 ## idea is if we know 's' subsets of A and want to find the subsets of 'B' where B > A
 #the subsets of B will be of two types 1. all contained in 's' 2. 's' + x where x is the element not present in A
@@ -143,8 +143,8 @@ def subsets(s):
     #ss_incl_h = (([h] + ss) for ss in ss_excl_h)
     #print(type(ss_incl_h))
     return ss_incl_h + ss_excl_h
-    
-    
+
+
 # Q1 Search an element in a rotated array
 #Input arr[] = {3, 4, 5, 1, 2}
 #Element to Search = 1
@@ -161,12 +161,12 @@ def subsets(s):
 # Q2 Rotate a linked list by k nodes counter clockwise which also means clockwise by n-k
 # idea : 1. Grab the last node and connect last_node.next = head
 #        2. run for loop to grab the kth node
-#        3. head = kth_node.next 
-#        4. kth_node = None 
+#        3. head = kth_node.next
+#        4. kth_node = None
 
-#Given an unsorted array of integers, find the length of the longest consecutive elements sequence. 
-#For example, 
-#Given [100, 4, 200, 1, 3, 2], 
+#Given an unsorted array of integers, find the length of the longest consecutive elements sequence.
+#For example,
+#Given [100, 4, 200, 1, 3, 2],
 #The longest consecutive elements sequence is [1, 2, 3, 4] in time:O(n)
 # Approach : 1. Create a hash set to store all elements from constant lookup
 # check if the element is the beginning of the sequence by checking if a[i] - 1 is present in the set
@@ -176,26 +176,26 @@ def subsets(s):
 def consec_elem(a):
     s = set()
     length = 0
-    
+
     #add all the elements to the set
     for elem in a:
         s.add(elem)
-    
+
     for i in range(len(a)):
         if (a[i]-1) not in s:
             curr_elem = a[i]
             while curr_elem in s:
                 curr_elem = curr_elem + 1
             length = max(length,curr_elem - a[i])
-    return length    
+    return length
 
 #Partition a set into two subsets such that the difference of subset sums is minimum
-#Input:  arr[] = {1, 6, 11, 5} 
+#Input:  arr[] = {1, 6, 11, 5}
 #Output: 1
 #Explanation:
-#Subset1 = {1, 5, 6}, sum of Subset1 = 12 
-#Subset2 = {11}, sum of Subset2 = 11        
-    
+#Subset1 = {1, 5, 6}, sum of Subset1 = 12
+#Subset2 = {11}, sum of Subset2 = 11
+
 # Recursion: The recursive approach is to generate all possible sums from all the values of array and to check which solution is the most optimal one.
 #To generate sums we either include the i’th item in set 1 or don’t include, i.e., include in set 2.
 
@@ -206,21 +206,21 @@ def find_min_rec(a,length,sumcalculated,sumtotal):
         res1 = find_min_rec(a,length-1,sumcalculated + a[length - 1],sumtotal) # included in 1st set
         res2 = find_min_rec(a,length-1,sumcalculated,sumtotal)
     return min(res1,res2)
-    
+
 def find_min(a):
     sumtotal = 0
     for e in a:
         sumtotal = sumtotal + e;
     return find_min_rec(a,len(a),0,sumtotal)
-    
+
 
 # Partition problem is to determine whether a given set can be partitioned into two subsets such that the sum of elements in both subsets is same.
 #arr[] = {1, 5, 11, 5}
-#Output: true 
+#Output: true
 #The array can be partitioned as {1, 5, 5} and {11}
 #
 #arr[] = {1, 5, 3}
-#Output: false 
+#Output: false
 #The array cannot be partitioned into equal sum sets.
 #
 #1) Calculate sum of the array. If sum is odd, there can not be two subsets with equal sum, so return false.
@@ -228,15 +228,15 @@ def find_min(a):
 #
 #The first step is simple. The second step is crucial, it can be solved either using recursion or Dynamic Programming.
 #
-#Let isSubsetSum(arr, n, sum/2) be the function that returns true if 
+#Let isSubsetSum(arr, n, sum/2) be the function that returns true if
 #there is a subset of arr[0..n-1] with sum equal to sum/2
 #
 #The isSubsetSum problem can be divided into two subproblems
-# a) isSubsetSum() without considering last element 
+# a) isSubsetSum() without considering last element
 #    (reducing n to n-1)
-# b) isSubsetSum considering the last element 
+# b) isSubsetSum considering the last element
 #    (reducing sum/2 by arr[n-1] and n to n-1)
-#If any of the above the above subproblems return true, then return true. 
+#If any of the above the above subproblems return true, then return true.
 #isSubsetSum (arr, n, sum/2) = isSubsetSum (arr, n-1, sum/2) ||
 #                              isSubsetSum (arr, n-1, sum/2 - arr[n-1])
 
@@ -261,7 +261,7 @@ def find_partition(arr,n):
         return False
     else:
         return find_partition_util(arr,n,sum//2)
-        
+
 
 # Longest Substring Without Repeating Characters
 
@@ -275,30 +275,30 @@ def longest_substring(s):
         for j in range(i+1, len(s)):
             if is_unique(s,i,j):
                 length = max(length, j-i)
-                
+
     return length
 
 def is_unique(s, start, end):
     storage = set()             # since it is local to this function, for every new string it always starts empty and breaks as soon as it hits a duplicate character in that substring
-    
+
     for i in range(start, end):
         if s[i] in storage:
             return False
-        else:    
+        else:
             storage.add(s[i])
     return True
-    
+
 # To make this O(N^2) in the is_unique function instead of checking the entire substring everytime, just check s[j]
 def longest_substring_v2(s):
     length = 1
-    
+
     if len(s) == 1:
         return 1
-        
+
     for i in range(len(s)):
         storage = set()             # initialising the set evrytime a new substring starts
         storage.add(s[i])           # always add the first element of the substring in the set when it starts
-        
+
         for j in range(i+1, len(s)):
             if s[j] not in storage:
                 storage.add(s[j])
@@ -306,7 +306,7 @@ def longest_substring_v2(s):
             else:
                 break
     return length
-                
+
 # Approach 2:
     # use sliding window: i set to an element while j moves forward checking if the element its on is in the set
     # if it is it removes the ith element from the set and shifts i to the right by 1
@@ -323,7 +323,7 @@ def longest_substring_v3(s):
         else:
             storage.remove(s[i])
     return length
-            
+
 # Q. find longest palindrome substring in a string
 # Approach 1: O(n^3) similar to the above question: loop through the string and check if each substring is a palindrome
 # for this will have to create a palindrome method
@@ -335,26 +335,26 @@ def increasingTripletContinuous(nums):
         i = 0
         j = 1
         while i<len(nums) and j<len(nums):
-            
+
             if count == 3:
                 return True
             if nums[i] < nums[j]:
                 count += 1
-                
+
             else:
                 count = 1
-                
-                
+
+
             i += 1
             j += 1
-            
+
         return False
-        
+
 # Q. same as above but a subsequence that is not continuous
 # idea is to find any 3 elements a,b,c such that a<b<c
 def increasingTriplet(nums):
         a, b = float("inf"), float("inf")
-        
+
         for c in nums:
             #1. use c to find absolute minimum
             if a >= c:
@@ -366,7 +366,7 @@ def increasingTriplet(nums):
             # if none of the above happens that means a and b have been fixed and c is greater than both
                 return True
         return False
-        
+
 # Q. remove duplicates and reverse string
 # use the hash map only to keep track of which is duplicate and NOTHING MORE
 # keep adding every element to a list whenever it is first entered into the hash map
@@ -383,8 +383,8 @@ def remove_reverse(s):
     for i in reversed(range(len(new_str))):
         print(new_str[i])
     return new_str
-        
-    
+
+
 # Q. Check for balanced parenthesis
 # create dictionary: key = left parts and value = right parts
 # push all the left parts in a stack
@@ -400,8 +400,8 @@ def check_parenthesis(s):
             return False
     return True
 
-            
-    
+
+
 #Q. group all anagrams together in an array of strings : O(n^2)
 group = collections.namedtuple("group",("sum","index"))
 
@@ -414,13 +414,13 @@ def anagrams(s):
     #NOTE: LIST.SORT(0 DOES SORTING IN PLACE AND RETURNS NONE)
     b = sorted(res_l)
     return b
-    
+
 def add(s):
     r = 0
     for i in range(len(s)):
         r += ord(s[i])
     return r
-    
+
 
     # NOTE: given a string 's', find the number of palindrome permtations of the string
     # 1. check if any permutation of the string can be a palindrome i.e
@@ -439,14 +439,14 @@ def check_palindrome(s):
 
 # Q. reverse the words in a string:
     # eg the cat is bad -> bad is cat the
-    
+
 #def rev_words(sentence):
 #    i = 0
 #    j = 0
 #    s = list(sentence)
-#    
-#    
-#    
+#
+#
+#
 #def reverse(s):
 #    b = list(s)
 #    for k in range(len(s)//2):
@@ -456,7 +456,7 @@ def check_palindrome(s):
 #        print(b)
 #    t = ''.join(b)
 #    return t
-            
+
 
 def reverse_list(letters, first=0, last=None):
     "reverses the elements of a list in-place"
@@ -484,3 +484,138 @@ def reverse_words(string):
     if first < last:
         reverse_list(characters, first, last=len(characters))
     return ''.join(characters)
+
+
+#Q. Given a string s, return all the palindromic permutations (without duplicates) of it. Return an empty list if no palindromic permutation could be form.
+# For example:
+# Given s = "aabb", return ["abba", "baab"].
+# Given s = "abc", return [].
+
+# Approach 1: Generate all the permutations which have len(word) and check if each of them is a palindrome
+
+#Approach 2: Smarter way of doing approach1 (backtracking)
+# 1. create the odd/even palindrome check function which checks if every permutation of the same length is indeed a permutation
+# 2. Now to create the permutations of say aabb, create a list of length 2 (half of 4) and add the distinct characters in it,
+# so it will contain 'a' and 'b'.
+# now create permutations of this new set and then add the reverse of it to its end; This prevents us from listing all unnecessary permutations which we know are not palindromes
+# eg perm = ab, now add reverse ba to its end. We get abba as the permutation
+
+
+#Q. One Edit Distance
+#Given two strings S and T, determine if they are both one edit distance apart.
+
+def oneEditDistance(s1, s2):
+    # if the difference in length is more than 1, it can't be one edit distance
+    if abs(len(s1) - len(s2)) > 1:
+        return False
+    #Initialising the no.of edits and the two pointers to traverse the strings
+    num_edits = 0
+    p1 = 0
+    p2 = 0
+
+    while p1<len(s1) and p2<len(s2):
+        # either the two characters are same or different
+
+        #Characters are different
+        if s1[p1] != s2[p2]:
+            #increment num_edits
+            num_edits = num_edits + 1
+
+            #if num_edits is greater than 1, return False
+            if num_edits > 1:
+                return False
+
+            # if length difference is 1, then remove character from the longer string
+            if len(s1) > len(s2):
+                p1 = p1 + 1
+            elif len(s1) < len(s2):
+                p2 = p2 + 1
+            #If both have the same length then just remove the character that doesn't match, since the rest will match
+            else:
+                p1 = p1 + 1
+                p2 = p2 + 1
+        #if characters match, then increment both
+        else:
+            p1 = p1 + 1
+            p2 = p2 + 1
+
+        #In case all characters are same, check if the last character in a word is extra (after while loop which breaks when either p1 or p2 equals the length of the string)
+        if p1<len(s1) or p2<len(s2):
+            num_edits = num_edits + 1
+
+        return num_edits==1
+
+# Q. Reverse Words in a String II
+# For example,
+# Given s = "the sky is blue",
+# return "blue is sky the".
+
+# Approach: 1. reverse the entire string and then reverse every individual word O(n^2)
+def reverseWord(w):
+    s = list(w)
+    p1 = 0
+    p2 = len(s) - 1
+
+    while p1<=p2:
+        temp = s[p1]
+        s[p1] = s[p2]
+        s[p2] = temp
+        p1 = p1 + 1
+        p2 = p2 - 1
+    return s
+
+def reverseSentence(w):
+    s = reverseWord(w)
+    print(s)
+    p1 = 0
+    a = []
+    for i in range(len(s)):
+        if s[i] == ' ':
+            print(i)
+            a.append(reverseWord(s[p1:i]))
+            p1 = i + 1  #set p1 to start of new word
+    a.append(reverseWord(s[p1:len(s)]))
+    return a
+
+
+#Q. Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+# "abc" -> "bcd" -> ... -> "xyz"
+# Given a list of strings which contains only lowercase alphabets, group all strings that belong to the same shifting sequence.
+#
+# For example, given: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"],
+# A solution is:
+#
+# [
+#   ["abc","bcd","xyz"],
+#   ["az","ba"],
+#   ["acef"],
+#   ["a","z"]
+# ]
+
+# Approach: 1. abc, bcd, xyz belong to same group because the difference between the subsequent characters is the same
+# eg in abc, b-a = 1 and c-b = 1. Similarly, in xyz, y-x = 1and z-y = 1. So, abc and xyz belong to the same group
+# So, maintain a dictionary where key is the string of the difference and the value is the index of the word corresponding to that difference
+# Hence, dict["aa"] because 1=a, 2=b, ...will contain [abc,bcd,xyz] which are the words with 11 as the differeneces between the characters
+
+def differenceWord(word):
+    res=""
+    for i in range(1,len(word)):
+        difference = ord(word[i-1]) - ord(word[i])
+        #In case of overflow eg zab
+        if difference<0:
+            difference = difference + 26
+
+        res = res + chr(difference) + 'a'
+    return res
+
+def groupWords(arr):
+    #Create a dictionary with keys as strings and values as list
+    d = collections.defaultdict(list)
+
+    for word in arr:
+        diff = differenceWord(word)
+        d["diff"].append(word)
+
+    for key in d.keys():
+        for word in d[key]:
+            print(word)

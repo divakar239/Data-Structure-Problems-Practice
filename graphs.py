@@ -96,7 +96,9 @@ class graph:
         rec_stack = [False]*len(self.graph)   # keeps track of all vertices in the stack and helps detect cycle
         for v in self.graph:
             if visited[v] == False:
-                return self.detect_cycle_util(v,visited,rec_satck)
+                if self.detect_cycle_util(v,visited,rec_satck) == True:
+                    return True
+        return False
             
     def detect_cycle_util(self,v,visited,rec_stack):
         visited[v] = True
@@ -162,7 +164,7 @@ class graph:
                 
             
 # Problem : Given Teams A and B, is there a sequence of teams starting with A 
-#and ending with Bsuch taht each team in the sequence has beaten the next team in the sequence.
+#and ending with B such taht each team in the sequence has beaten the next team in the sequence.
 # Solution, model this problem as a graph: 
     # teams = vertices; source = winning and sink is losing
     #perform graph reachability eg dfs or bfs from A to B
@@ -233,7 +235,7 @@ def can_a_beat_b(matches,a,b):
 # the coordiantes are the (i,j) of the element treating as left top corner as the (0,0)
 
 
-#Union by Rank and FindParent by path compression
+#Union by Rank and FindParent by path compression done to get a worst case O(logn) implementation
 #Naive implementations take O(n)
 #parents list should maintain tuples (parent,rank) for each index(which is the vertex)
 #parents = [(-1,0)] for _ in range(len(self.graph))]   will initialse each vertex's parent as itself and rank as 0
@@ -264,7 +266,7 @@ def union_rank(parents,x,y):
         
 
 #NOTE:
-    #1. For path compression and union by ranking each vertex needs to store (ran, parent) information with it:
+    #1. For path compression and union by ranking each vertex needs to store (rank, parent) information with it:
         # these have to be mutable as rank and parents will change , so do NOT use namedtuples as they are immutable objects
     
     #2. to create a list of lists:
@@ -288,5 +290,109 @@ def union_rank(parents,x,y):
 
         
         
-        
-        
+####################
+
+# Q A group of two or more people wants to meet and minimize the total travel distance. You are given a 2D grid of values 0 or 1, where each 1 marks the home of someone in the group.
+# The distance is calculated using Manhattan Distance, where distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+#For example, given three people living at (0,0), (0,4), and (2,2):
+# 1 - 0 - 0 - 0 - 1
+# |   |   |   |   |
+# 0 - 0 - 0 - 0 - 0
+# |   |   |   |   |
+# 0 - 0 - 1 - 0 - 0
+# The point (0,2) is an ideal meeting point, as the total travel distance of 2+2+2=6 is minimal. So return 6.
+
+# Approach 1: Carry out BFS from every house(1) and add up the distances; then choose the (0) with least sum: O(n^2)
+
+# Approach 2: Sorting (accepted)
+# consider 1D problem, The point which is equidistant from either end of the row (that is the median) is the optimal point for meeting.
+# We will treat the 2D problem as two independent 1D problems that is find median of the sorted row co-ordinates and sorted column co-ordinates
+
+def minDistance1D(points, origin):
+    # points is array of ints since it is in 1D , co-ordinates
+    distance = 0
+    for point in points:
+        distance += abs(point - origin)
+    return distance
+
+def minDistance2D(grid2D):
+    # we will use these to collect all the positions of 1s
+    rows = []
+    cols = []
+
+    for i in range(len(grid2D)):
+        for j in range(len(grid2D[0])):
+            if grid2D[i][j] == 1:
+                rows.append(i)
+                cols.append(j)
+
+    # After collection of the x coordinates in rows (which by the nature of collection are in sorted order) and y in cols(need to be sorted,
+    # we take the median of the two as the origin
+
+    row = rows[len(rows//2)]
+    cols.sort()
+    col = cols[len(cols//2)]
+
+    # the point they should meet on is the median of the rows and columns
+    meetPoint = (row, col)
+
+    dist = (minDistance1D(rows, row) + minDistance1D(cols, col))
+    return dist
+
+#Q You are given a m x n 2D grid initialized with these three possible values.
+
+# -1 - A wall or an obstacle.
+# 0 - A gate.
+# INF - Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than 2147483647.
+# Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+#
+# For example, given the 2D grid:
+# INF  -1  0  INF
+# INF INF INF  -1
+# INF  -1 INF  -1
+#   0  -1 INF INF
+# After running your function, the 2D grid should be:
+#   3  -1   0   1
+#   2   2   1  -1
+#   1  -1   2  -1
+#   0  -1   3   4
+
+# Approach 1: Carry out a bfs from every empty room to the gate and report the minimum value of the gate O(n^2)
+
+#Approach 2: Collect all the gates and simultaneously carry out a bfs from them. O(n)
+
+# Assuming the 2D graph is called matrix
+
+def wallsAndGates(matrix):
+    directions = [(1,0), (-1,0), (0,1), (-1,0)]   #the permitted directions we can move from a point (row(x-axis), col(y-axis))
+    EMPTY = float("INF")
+    GATE = 0
+    WALL = -1
+    bfs(matrix, directions)
+
+def bfs(matrix, directions):
+    rows = len(matrix)
+    cols = len(matrix[0])
+    q = []
+    #Collect all the gates and put them into a queue
+    for row in rows:
+        for col in cols:
+            if matrix[row][col] == GATE:
+                q.append((row, col))
+    #loop to carry out bfs from gates
+    while len(q) != 0:
+        e = q.pop()
+        x = e[0]
+        y = e[1]
+
+        for d in directions:
+            r = x + d[0]
+            c = y + d[1]
+            #if the traversing takes us to non-empty or out of bounds then try again with another direction
+            if r<0 || c<0 || r>=rows || c>=cols || matrix[r][c] != EMPTY:
+                continue
+            #if we are within bounds and land on an empty space record the distance from the point from where we moved
+            matrix[r][c] = matrix[x][y] + 1
+            #add the empty space to the queue to continue the bfs
+            q.append((r,c))
+

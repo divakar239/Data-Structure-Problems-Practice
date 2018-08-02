@@ -326,4 +326,267 @@ def reversed_insert(s,x):
         e = pop()
         reversed_insert(s,x)
         s.append(e)
-    
+
+
+# Q Wiggle Sort
+#Given an unsorted array nums, reorder it in-place such that nums[0] <= nums[1] >= nums[2] <= nums[3]....
+#For example, given nums = [3, 5, 2, 1, 6, 4], one possible answer is [1, 6, 2, 5, 3, 4].
+
+#Approach 1: Sort the array and then starting from the second element, swap consecutive pairs
+# example, 1,2,3,4,5,6   ->  1,3,2,5,4,6   : O(nlogn + n)
+
+#Approach 2: Make use of the even or odd positions of the elements
+
+def wiggleSort(arr):
+    for i in range(len(arr)):
+        if((i%2 == 0 && arr[i] > arr[i+1]) || (i%2 == 1 && arr[i] < arr[i+1])):
+            temp = arr[i]
+            arr[i] = arr[i+1]
+            arr[i+1] = temp
+            return arr
+
+
+# Given a time represented in the format "HH:MM", form the next closest time by reusing the current digits. There is no limit on how many times a digit can be reused.
+# You may assume the given input string is always valid. For example, "01:34", "12:09" are all valid. "1:34", "12:9" are all invalid.
+
+# Input: "19:34"
+# Output: "19:39"
+# Explanation: The next closest time choosing from digits 1, 9, 3, 4, is 19:39, which occurs 5 minutes later.
+# It is not 19:33, because this occurs 23 hours and 59 minutes later.
+
+# Approach 1: Simulate the clock going forward by one minute. Each time it moves forward, if all the digits are allowed, then return the current time.
+# Since we are representing time in minutes, we will use an integer 't' s.t. (0<= t <= 24*60)
+# So, to get the hours we need t/60 and to get the minutes are t%60
+# each digit of hours can be found by (hours/10, hours%10)
+
+def nextClosestTime(time):
+    #first get the integer 't'
+    t = 60*int(time[:2]) + int(time[2:])
+
+    #build list of all the allowed numbers in the string
+    allowed = []
+    for x in time:
+        if x != ":":
+            allowed.append(int(x))
+
+    while True:
+        t += 1
+        hours = t/60
+        mins = t%60
+
+        obtained = []
+        # get the respective digits
+        hour_digit1 = hours/10
+        hour_digit2 = hours%10
+
+        min_digit1 = mins/10
+        min_digit2 = mins%10
+
+        obtained.append(hour_digit1)
+        obtained.append(hour_digit2)
+        obtained.append(min_digit1)
+        obtained.append(min_digit2)
+
+        for digit in obtained:
+            if digit in allowed:
+                ans = (hours,mins)
+                return ans
+
+
+
+# Q. There is a garden with N slots. In each slot, there is a flower. The N flowers will bloom one by one in N days. In each day, there will be exactly one flower blooming and it will be in the status of blooming since then.
+#
+# Given an array flowers consists of number from 1 to N. Each number in the array represents the place where the flower will open in that day.
+#
+# For example, flowers[i] = x means that the unique flower that blooms at day i will be at position x, where i and x will be in the range from 1 to N.
+#
+# Also given an integer k, you need to output in which day there exists two flowers in the status of blooming, and also the number of flowers between them is k and these flowers are not blooming.
+#
+# If there isn't such day, output -1.
+# Input:
+# flowers: [1,3,2]
+# k: 1
+# Output: 2
+# Explanation: In the second day, the first and the third flower have become blooming.
+#
+# Input:
+# flowers: [1,2,3]
+# k: 1
+# Output: -1
+
+# Approach 1: find min and max of the flower array. Those are the first and the last flowers.
+# Iterate through the array and check if  1) curr_flower - min - 1 == k  or 2) max - curr_flower - 1 == k for every entry in the active data structure
+
+def findMinMax(arr):
+    # O(n)
+    min = int("INF")
+    max = int("-INF")
+
+    for num in arr:
+        if num<min:
+            min = num
+        elif num>max:
+            max = num
+    ans = (min,max)
+    return ans
+
+def emptySlots(flowers): #O(n^2) as for each flower added to acive we need to query min/max which is O(n)
+    # Active keeps track of the current blooming flower and allows us to check if the neighbors of that flower satisfy the condition
+    # we want active to be a sorted data structure but can also query min/max everytime on it for every new entry
+    active = []
+    day = 0
+    for curr_flower in flowers:
+        day += 1
+
+        active.append(curr_flower)
+        res = findMinMax(active)
+
+        if res[1] - curr_flower - 1 == k || curr_flower - res[0] -1 ==k:
+            return day
+
+    return -1
+
+
+# Q. Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), determine if a person could attend all meetings.
+#
+# For example,
+# Given [[0, 30],[5, 10],[15, 20]],
+# return false.
+
+# Ans : 1.Sort the times by the start times and check if the end time of the current period is less than the start time of the next
+
+# Q. Given a list of words and two words word1 and word2, return the shortest distance between these two words in the list.
+#
+# For example,
+# Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+#
+# Given word1 = “coding”, word2 = “practice”, return 3.
+# Given word1 = "makes", word2 = "coding", return 1.
+
+#Approach: O(n) use two indices to scan the array and find the minimum distance between the two words
+def wordsDsitance(words, w1, w2):
+    i1 = -1
+    i2 = -1
+    dist = float("INF")
+
+    for i in range(len(words)):
+        if words[i] == w1:
+            i1 = i
+        if words[i] == w2:
+            i2 = i
+        if i1 != -1 and i2 != -1:
+            if dist > abs(i1-i2):
+                dist = abs(i1-i2)
+    return dist
+
+
+
+# Q.  Write a function to generate the generalized abbreviations of a word.
+# Example:
+# Given word = "word", return the following list (order does not matter):
+# ["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+
+# Answer: Using Bit Manipulation
+
+# 1. consider the word and 'x' which will be a bit representation of every single possible combination
+#for example, x=1010 will represent w1r1(because word[0] = w and x is being shifted left) i.e. if the bit position has 1 then the character will be swapped with a number and if not then it remains
+
+def getAbbr(word):
+    # x is the bit representation and is incremented by 1 to get the next one
+    for x in range(len(word)):
+        return getAbbrUtil(word,x)
+
+def getAbbrUtil(word, x):
+    abbr = []  #the abbreviation will be constructed in it
+    k = 0     # keep track of the number depending on the bit at the character's position
+
+    #Looping through every bit position in x
+    for i in range(len(word)):
+        # 0 means retain the word
+        if x&1 == 0:
+            if k!= 0:
+                abbr.append(k)
+                k = 0
+            #always append the character at the current position i
+            abbr.append(word[i])
+        else:
+            k += 1
+        x = x>>1
+    #Adding the last k in case it is non-zero
+    if k!=0:
+        abbr.append(k)
+    return abbr
+
+#Q. Numbers can be regarded as product of its factors. For example,
+# 8 = 2 x 2 x 2;
+#   = 2 x 4.
+# Write a function that takes an integer n and return all possible combinations of its factors.
+# Note:
+# You may assume that n is always positive.
+# Factors should be greater than 1 and less than n.
+# Examples:
+# input: 1
+# output:
+# []
+# input: 37
+# output:
+# []
+# input: 12
+# output:
+# [
+#   [2, 6],
+#   [2, 2, 3],
+#   [3, 4]
+# ]
+# input: 32
+# output:
+# [
+#   [2, 16],
+#   [2, 2, 8],
+#   [2, 2, 2, 4],
+#   [2, 2, 2, 2, 2],
+#   [2, 4, 4],
+#   [4, 8]
+#]
+
+# Approach: use recursion on every quotient obtained on dividing the number by factor
+# maintain a single_list to contain the current factors and a final_list to contain all the single_lists
+
+def getFactCombinations(num):
+    final_list = []
+    single_list = []
+    getFactCombinationsUtil(2, 1, num, final_list, single_list)
+    return final_list
+
+def getFactCombinationsUtil(factor, curr_product, num, final_list, single_list):
+    # end condition for recursion
+    if factor>num || curr_product>num:
+        return
+
+    # if the current product is equal to the number then, we get the list of factors in the single_list
+    # so, add it to the final list
+    if curr_product == num:
+        final_list.append(single_list)
+        return
+
+    # looping through all the factors of the number and recursively checking every quotient we get
+    for i in range(factor, num):
+        if i*curr_product > num:
+            break
+
+        if num%i == 0:
+            # add the factor to the single_list
+            single_list.append(i)
+
+            # Recursive call on the current factor i.e. i an dthe current product which is i*curr_product
+            getFactCombinationsUtil(i, i*curr_product, num, final_list, single_list)
+
+            # remove the last factor added
+            single_list.pop(len(single_list)-1)
+
+
+
+
+
+
+

@@ -22,8 +22,8 @@ class bst:
             self.insert_node(self.root,data)
     
     def insert_node(self,root,data):
-        if(data<=root.data):
-            if(root.left!=None):
+        if data<=root.data:
+            if root.left is not None:
                 self.insert_node(root.left,data)
             else:
                 root.left=bst_node(data)
@@ -121,7 +121,7 @@ class bst:
         if root.data>a.data and root.data<b.data:
             return root
         if root.data>a.data and root.data>b.data:
-            return self.ind_LCA_util(root.left,a,b)
+            return self.find_LCA_util(root.left,a,b)
         if root.data<a.data and root.data<b.data:
             return self.find_LCA_util(root.right,a,b)
             
@@ -211,7 +211,7 @@ def successor_predecessor(node,target):
     if target.data == node.data:
         if target.left != None:
             #for predecessor we want the right most leaf node of the left subtree
-            temp = target.left
+            tmp = target.left
             while(tmp.right != None):
                 tmp = tmp.right
             predecessor = tmp
@@ -221,15 +221,46 @@ def successor_predecessor(node,target):
             while(tmp.left != None):
                 tmp = tmp.left
             successor = tmp
-    #if the target data is less than the node then succesor is the node and we search the left subtree for the predecessor
+    #if the target data is less than the node then successor is the node and we search the left subtree for the predecessor
     elif target.data < node.data:
         successor = node
-        successor_predecessor(target.left,target)
+        successor_predecessor(node.left,target)
     #if target data is more than the node data then the predecessor is the node and we search the right subtree for the successor
     elif target.data > node.data:
         predecessor = node
-        successor_predecessor(target.right,target)
-        
+        successor_predecessor(node.right,target)
+
+# the above question in separate parts
+def successor(root, target):
+    node = root
+    if target.right != None:
+        temp = target.right
+        while temp != None:
+            temp = temp.left
+        return temp
+    else:
+        if node.data > target.data:
+            # When the target has no right subtree and is in the kleft subtree of the root , then the root is the successor
+            return node
+        if node.data < target.data:
+            # If the target is the right subtree, then the parent is the successor
+            return successor(node.right, target)
+
+def predecessor(root, target):
+    # everything is the opposite of successor()
+    node = root
+    if target.left != None:
+        temp = target.left
+        while temp != None:
+            temp = temp.right
+        return temp
+    else:
+        if node.data > target.data:
+            return predecessor(node.left, target)
+        if node.data < target.data:
+            return node
+
+
 #Delete a node in binary search tree
 def delete_node(root,target):
     if root == None:
@@ -252,7 +283,33 @@ def delete_node(root,target):
             root.data = temp.data
             root.right = delete_node(root.right,target)
             
-        
+#Q. Given a binary search tree and a target value K. The task is to find the node with minimum absolute difference with given target value K.
+def getClosestNode(root, target_val):
+    if root is None:
+        return None
+
+    min_val = float("INF")
+    min_node = None
+    getClosestNodeUtil(root, target_val, min_val, min_node)
+    return (min_val, min_node)
+
+def getClosestNodeUtil(root, target_val, min_val, min_node):
+    if root.data == target_val:
+        min_val = 0
+        min_node = root
+
+    # Updating the values
+    if min_val > abs(root.data - target_val):
+        min_val = abs(root.data - target_val)
+        min_node = root
+
+    if target_val < root.data:
+        getClosestNodeUtil(root.left, target_val, min_val, min_node)
+    if target_val > root.data:
+        getClosestNodeUtil(root.right, target_val, min_val, min_node)
+
+#Q. Largest BSt subtree where largest means number of nodes
+
 def make_tree():
     t=bst()
     t.insert(108)
@@ -267,6 +324,9 @@ def make_tree():
     
     
 #Given a BINARY TREE, print all root-to-leaf paths: time complexity O(n^2), space complexity O(n)
+# the time complexity is O(n + lh) where 'n' is the time to go through every node and 'h' is the length of the array that is used to store the path. 'l' is the number of times the array is printed
+# if the tree is a list then l=1 and h=n => we get O(n+n) = O(n)
+# if the tree is perfectly balanced then l=n/2 and h=log(n) => O(n+nlogn) = O(nlogn)
 
 def tree_paths(node,n):
     path=[]
@@ -395,7 +455,7 @@ def ancestors(node,target):
         return False
     if target.data == node.data:
         return True
-    if ancestors(node.left,target) or ancetors(node.right,target):
+    if ancestors(node.left,target) or ancestors(node.right,target):
         print(node.data)
         return True
     return False
@@ -431,18 +491,18 @@ def height(node):
     #1.write a program to return the largest size of subtree that is balanced
     #2.define K as the balance factor and find a node in the tree such that it is not K balanced but all of its descendents are
     
-#the named tuple allows us to hold two fileds for a node, the balance property and the height of the node
+#the named tuple allows us to hold two fields for a node, the balance property and the height of the node
 balanced_status_with_height = collections.namedtuple('balanced_status_with_height',('balance_check','height'))
 def check_balanced(node):
     if node == None:
         return balanced_status_with_height(True,-1)   #for empty tree, balance = True and height is -1
     
     left_bool = check_balanced(node.left)             #returns a tuple
-    if left_bool.balance_check = false:
+    if left_bool.balance_check == False:
         return balanced_status_with_height(False,0)
     
     right_bool = check_balanced(node.right)
-    if right_bool.balance_check = False:
+    if right_bool.balance_check == False:
         return balanced_status_with_height(False,0)
         
     is_balanced = (abs(left_bool.height - right_bool.height) <= 1)
@@ -521,4 +581,53 @@ def count_singly_util(node,count):
     count = count + 1
     return True
     
+
+#Q. Given a binary tree, find the length of the longest consecutive sequence path.
+# The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The longest consecutive path need to be from parent to child (cannot be the reverse).
+
+# For example,
+#    1
+#     \
+#      3
+#     / \
+#    2   4
+#         \
+#          5
+# Longest consecutive sequence path is 3-4-5, so return 3.
+#    2
+#     \
+#      3
+#     /
+#    2
+#   /
+#  1
+# Longest consecutive sequence path is 2-3,not3-2-1, so return 2.
+
+
+# Approach 1: bottom-up like post order
+
+def longestConsecutive(root):
+    max = 0
+
+    dfs(root, max)
+    return max
+
+def dfs(root, max):
+    #end condition
+    if root is None:
+        return 0
+    #traverse the children
+    l = dfs(root.left, max) + 1
+    r = dfs(root.right, max) + 1
+
+    #rewrite  children heights to 1 if their value is not the continuous successor of the root
+    if l.data != root.data + 1:
+        l = 1
+    if r.data != root.data + 1:
+        r = 1
+
+    #consider max of the children
+    length = max(l, r) + 1
+    if max<length:
+        max = length
 
