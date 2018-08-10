@@ -396,3 +396,98 @@ def bfs(matrix, directions):
             #add the empty space to the queue to continue the bfs
             q.append((r,c))
 
+
+# Q. Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
+# Count the number of distinct islands. An island is considered to be the same as another if they have the same shape, or have the same shape after rotation (90, 180, or 270 degrees only) or reflection (left/right direction or up/down direction).
+#
+# Example 1:
+# 11000
+# 10000
+# 00001
+# 00011
+# Given the above grid map, return 1.
+#
+# Notice that:
+# 11
+# 1
+# and
+#  1
+# 11
+# are considered same island shapes. Because if we make a 180 degrees clockwise rotation on the first island, then two islands will have the same shapes.
+# Example 2:
+# 11100
+# 10001
+# 01001
+# 01110
+# Given the above grid map, return 2.
+#
+# Here are the two distinct islands:
+# 111
+# 1
+# and
+# 1
+# 1
+#
+# Notice that:
+# 111
+# 1
+# and
+# 1
+# 111
+# are considered same island shapes. Because if we flip the first array in the up/down direction, then they have the same shapes.
+
+# Approach : Canonical hash
+# 1. carry out dfs in the matrix from 1s
+# use complex numbers in python for easy transformations
+# 8 possibble transformations for every point
+# For each of 8 possible rotations and reflections of the shape, we will perform the transformation and then translate the shape
+# so that the bottom-left-most coordinate is (0, 0). Afterwards, we will consider the canonical hash of the shape to be
+# the maximum of these 8 intermediate hashes.
+
+# Intuition
+# We determine local coordinates for each island.
+# Afterwards, we will rotate and reflect the coordinates about the origin and translate the shape so that the bottom-left-most coordinate is (0, 0). At the end, the smallest of these lists coordinates will be the canonical representation of the shape.
+# Algorithm
+# We feature two different implementations, but the core idea is the same. We start with the code from the previous problem, Number of Distinct Islands.
+# For each of 8 possible rotations and reflections of the shape, we will perform the transformation and then translate the shape so that the bottom-left-most coordinate is (0, 0). Afterwards, we will consider the canonical hash of the shape to be the maximum of these 8 intermediate hashes.
+# In Python, the motivation to use complex numbers is that rotation by 90 degrees is the same as multiplying by the imaginary unit, 1j. In Java, we manipulate the coordinates directly. The 8 rotations and reflections of each point are (x, y), (-x, y), (x, -y), (-x, -y), (y, x), (-y, x), (y, -x), (-y, -x)
+
+def numIslands(grid):
+    visited = set() # keep track of visited vertices
+    shapes = set()  # final set to keep track of distinct island shapes
+
+    for row in len(grid):
+        for col in len(grid[0]):
+            shape = set()
+            dfs(grid, visited, shape, row, col)
+            if shape:
+                shapes.add(canonical(shape))
+    return len(shapes)
+
+def dfs(grid, visited, shape, r, c):
+    if 0<=r<len(grid) and 0<=c<len(grid[0]) and grid[r][c] == 1 and (r,c) not in visited:
+        visited.add((r,c))
+        shape.add(complex(r,c))
+
+        #recursion on neighoring points
+        dfs(grid, visited, shape, r+1, c)
+        dfs(grid, visited, shape, r, c+1)
+        dfs(grid, visited, shape, r-1, c)
+        dfs(grid, visited, shape, r, c-1)
+
+def canonical(shape):
+    ans = None
+    for k in range(4):
+        # K represents the number of rotation i.e. by being applied as an exponent to 1j
+        ans = max(ans, translate([z * (1j) ** k for z in shape]))  #the argument of translate causes teh rotation on the original points
+        ans = max(ans, translate([complex(z.imag, z.real) * (1j) ** k for z in shape])) # the argument of translate flips the original points and then causes the rotation
+    return tuple(ans)
+
+
+def translate(shape):
+    # All this function does is subtract the lowest co-ordinate from all co-ordinates to move the entire shape to center by making the lowest co-ordinate (0,0)
+    w = complex(min(z.real for z in shape), min(z.imag for z in shape)) # make the lowest bottom point as (0,0)
+    return sorted(str(z-w) for z in shape)
+
+# Note the above solution (without the canonical function) can be use dto find distinct number of islands where translation
+# means that islands are same
