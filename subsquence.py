@@ -619,3 +619,111 @@ def groupWords(arr):
     for key in d.keys():
         for word in d[key]:
             print(word)
+
+
+# Q. Print maximum number of A’s using given four keys
+# Imagine you have a special keyboard with the following keys:
+# Key 1:  Prints 'A' on screen
+# Key 2: (Ctrl-A): Select screen
+# Key 3: (Ctrl-C): Copy selection to buffer
+# Key 4: (Ctrl-V): Print buffer on screen appending it
+#                  after what has already been printed.
+#
+# If you can only press the keyboard for N times (with the above four
+# keys), write a program to produce maximum numbers of A's. That is to
+# say, the input parameter is N (No. of keys that you can press), the
+# output is M (No. of As that you can produce).
+#
+# Input:  N = 3
+# Output: 3
+# We can at most get 3 A's on screen by pressing
+# following key sequence.
+# A, A, A
+#
+# Input:  N = 7
+# Output: 9
+# We can at most get 9 A's on screen by pressing
+# following key sequence.
+# A, A, A, Ctrl A, Ctrl C, Ctrl V, Ctrl V
+#
+# Input:  N = 11
+# Output: 27
+# We can at most get 27 A's on screen by pressing
+# following key sequence.
+# A, A, A, Ctrl A, Ctrl C, Ctrl V, Ctrl V, Ctrl A,
+# Ctrl C, Ctrl V, Ctrl V
+
+
+# Approach 1: Recursion
+# 1. For all N<7, the result is N
+# 2. An optimal sequence which produces maximum As will contain (ctrlA, ctrlC) followed only by ctrlVs
+# 3. We have to find the position in the sequence after which we can acheive step 2
+# 4. The minimum number of ctrlVs we can have after (ctrlA, ctrlC) is 1
+# 5. So, we iterate through every position starting from N-3 to 1 and compute the number of As which can be acheived
+# 6. All we are doing is starting with the assumption that (ctrlA, ctrlC, ctrlV) are placed at the end 3 places of the sequence
+# and we are just shifting them 1 place to the left every time till we hit the position that gives us the maximum As
+
+def findMaxAs(n):
+    #end condition
+    if n<7:
+        return n
+
+    maxAs = 0
+    #iterating through all positions starting from n-3
+    for i in reversed(range(1,n-3)):
+        #recursion
+        current_num =(n-i-1)*findMaxAs(i)
+        if current_num > maxAs:
+            maxAs = current_num
+    return maxAs
+
+# Approach 2: We are recomputing the break point for every position in the sequence
+# We can instead store results for every position we have computed in a table and find the max As in a bottom up approach
+
+def findMaxAsv2(n):
+    # end condition
+    if n < 7:
+        return n
+    # array to store results
+    results = []
+
+    # filling up initial values in the array
+    for i in range(1,7):
+        results[i] = i
+
+    for m in range(7,n):
+        results[m-1] = 0
+        for j in reversed(range(1,n-3)):
+            curr_num = (m-j-1)*results[j-1]
+            if curr_num > results[j-1]
+                results[j-1] = curr_num
+    return results[n-1]
+
+#Q. The API: int read4(char *buf) reads 4 characters at a time from a file.
+# The return value is the actual number of characters read. For example, it returns 3 if there is only 3 characters left
+# in the file.
+# By using the read4 API, implement the function int read(char *buf, int n) that reads n characters from the file.
+#
+# Note:
+# The read function may be called multiple times.
+
+#Assumption that read4(string) is pre defined
+def read(destination_buffer, n):
+    #initialising all parameters
+    buffer = [] #intermediate buffer
+    total_chars = 0
+    offset = 0
+    eof = False
+    chars_in_buffer = 0
+
+    while not eof and total_chars<n:
+        if chars_in_buffer == 0:
+            chars_in_buffer = read4(buffer)
+            eof = chars_in_buffer<4
+        num_chars_used = min(chars_in_buffer, n - total_chars)
+        for i in range(num_chars_used):
+            destination_buffer[total_chars+i] = buffer[offset+i]
+        total_chars += num_chars_used
+        chars_in_buffer -= num_chars_used
+        offset = (offset+num_chars_used)%4
+    return total_chars
