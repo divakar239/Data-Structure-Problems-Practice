@@ -528,3 +528,57 @@ def killPID(pid, ppid, kill):
 
     # Get the list of the element to be killed
     return graph[kill].append(kill)
+
+# Q. Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may exist one celebrity. The definition of a celebrity is that all the other n - 1 people know him/her but he/she does not know any of them.
+# Now you want to find out who the celebrity is or verify that there is not one.
+# The only thing you are allowed to do is to ask questions like: "Hi, A. Do you know B?"
+# to get information of whether A knows B. You need to find out the celebrity (or verify there is not one)
+# by asking as few questions as possible (in the asymptotic sense).
+# You are given a helper function bool knows(a, b) which tells you whether A knows B.
+# Implement a function int findCelebrity(n), your function should minimize the number of calls to knows.
+# Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's label if there is a celebrity in the party. If there is no celebrity, return -1.
+
+# Approach 1: O(n^2) graph
+# 1. There are (n choose 2) pairs so we will have to usw the 'knows' question that many times ~ O(n^2)
+# 2. Keep track of count for incoming and outgoing edges for each node
+# 3. If A knows B, increment A's outgoing by 1 and B's incoming by 1
+# 4. Check all nodes to find the node with 0 outgoing count
+
+# Approach 2: Use Stack O(n)
+
+# Idea
+# If A knows B, then A can’t be celebrity. Discard A, and B may be celebrity.
+# If A doesn’t know B, then B can’t be celebrity. Discard B, and A may be celebrity.
+# Repeat above two steps till we left with only one person.
+# Ensure the remained person is celebrity.
+
+# Steps
+# Push all the celebrities into a stack.
+# Pop off top two persons from the stack, discard one person based on return status of HaveAcquaintance(A, B).
+# Push the remained person onto stack.
+# Repeat step 2 and 3 until only one person remains in the stack.
+# Check the remained person in stack doesn’t have acquaintance with anyone else.
+
+def findCelebrity(n):
+    # declare stack and push all people in it
+    stack = []
+    for i in range(n):
+        stack.append(i)
+
+    person1 = stack.pop()
+    person2 = stack.pop()
+
+    while len(stack) > 1:
+        if knows(person1, person2):
+            # person1 is not the celebrity
+            stack.append(person2)
+        else:
+            # person2 is not celebrity
+            stack.append(person1)
+
+    # Check if the remaining person in the stack is indeed celebrity by checking if it knows anyone
+    e = stack.pop()
+    for i in range(n):
+        if i!=e and (knows(e,i) or not knows(i,e)):
+            return -1
+    return e

@@ -727,3 +727,50 @@ def read(destination_buffer, n):
         chars_in_buffer -= num_chars_used
         offset = (offset+num_chars_used)%4
     return total_chars
+
+
+# Q. Shortest Distance I
+# Given a list of words and two words word1 and word2, return the shortest distance between these two words in the list.
+# For example, Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+# Given word1 = "coding", word2 = "practice", return 3. Given word1 = "makes", word2 = "coding", return 1.
+
+# Approach: One Pass O(n)
+def shortestdistance1(words, word1, word2):
+    index1 = -1
+    index2 = -1
+    min_dist = float('inf')
+
+    for i in range(len(words)):
+        if words[i] == word1:
+            index1 = i
+        if words[i] == word2:
+            index2 = i
+        if index1 != -1 and index2 != -1:
+            if min_dist > abs(index1, index2)
+                min_dist = abs(index1, index2)
+
+    return min_dist
+
+# Q. Shortest Distance II
+# Extension of the first part that is the array of words is fixed but can be called multiple times for different words
+class wordDistance:
+    def __init__(self, words):
+        # Create an array that holds the index of every word in words to have a O(1) lookup
+        self.word_index = collections.defaultdict(list)
+        for i in range(len(words)):
+            self.word_index[words[i]].append(i)
+
+    def shortest_distance(self, word1, word2):
+        i = j = 0
+        min_distance = float('inf')
+
+        while i<(len(self.word_index[word1])) and j<(len(self.word_index[word2])):
+            min_distance = min(min_distance, abs(self.word_index[word1][i], self.word_index[word2][j]))
+            if self.word_index[word1][i]<self.word_index[word2][j]:
+                i = i+1
+            else:
+                j = j+1
+        return min_distance
+
+
+

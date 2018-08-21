@@ -987,3 +987,40 @@ def bfs(target_node, graph, min_val, res):
                 min_val = distance[v]
                 res = v
     return v
+
+
+# Q. Binary Tree Upside Down
+# Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
+#
+# For example:
+# Given a binary tree {1,2,3,4,5},
+#     1
+#    / \
+#   2   3
+#  / \
+# 4   5
+# return the root of the binary tree [4,5,2,#,#,3,1].
+#    4
+#   / \
+#  5   2
+#     / \
+#    3   1
+
+# Approach: O(n) worst condition is when the tree is a linked list where n is the number of nodes in it
+def fliptree(root):
+    # end conditions
+    if root is None:
+        return None
+    if root.left is None and root.right is None:
+        return root
+
+    # recursive call on the left nodes
+    flippednode = fliptree(root.left)
+
+    # perform alterations once the left node is obtained
+    root.left.left = root.right
+    root.left.right = root
+    root.left = root.right = None
+
+    # return the new tree
+    return flippednode

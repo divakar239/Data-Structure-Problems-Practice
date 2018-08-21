@@ -586,7 +586,55 @@ def getFactCombinationsUtil(factor, curr_product, num, final_list, single_list):
 
 
 
+# Q. Design a max stack that supports push, pop, top, peekMax and popMax.
+#
+# push(x) -- Push element x onto stack.
+# pop() -- Remove the element on top of the stack and return it.
+# top() -- Get the element on the top.
+# peekMax() -- Retrieve the maximum element in the stack.
+# popMax() -- Retrieve the maximum element in the stack, and remove it. If you find more than one maximum elements, only remove the top-most one.
+# Example 1:
+# MaxStack stack = new MaxStack();
+# stack.push(5);
+# stack.push(1);
+# stack.push(5);
+# stack.top(); -> 5
+# stack.popMax(); -> 5
+# stack.top(); -> 1
+# stack.peekMax(); -> 5
+# stack.pop(); -> 1
+# stack.top(); -> 5
 
 
+# Approach : use two stacks s1 and s2. Treat s1 as the main normal stack and s2 which always keeps the max element at the top
+# O(n) due to popMax as we have to go through all elements of stack1 to delete the element. All other operations are O(1)
+class MaxStack:
+    stack1 = []
+    stack2 = []
+    max = float('-inf')
+
+    def push(self, x):
+        self.stack1.append(x)
+        if max < x:
+            self.stack2.append(x)
+
+    def pop(self):
+        self.stack2.pop()
+        return self.stack1.pop()
+
+    def top(self):
+        return self.stack1[-1]
+
+    def peekMax(self):
+        return self.stack2[-1]
+
+    def popMax(self):
+        max_elem = self.stack2.pop()
+        buffer = []
+        while self.stack1.top() != max_elem:
+            buffer.append(self.stack1.top())
+        self.stack1.pop()
+        while len(buffer) != 0:
+            self.stack1.append(buffer.pop())
 
 
