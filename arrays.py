@@ -637,4 +637,129 @@ class MaxStack:
         while len(buffer) != 0:
             self.stack1.append(buffer.pop())
 
+# Q. There are a row of n houses, each house can be painted with one of the three colors: red, blue or green.
+# The cost of painting each house with a certain color is different.
+# You have to paint all the houses such that no two adjacent houses have the same color.
+# The cost of painting each house with a certain color is represented by a n x 3 cost matrix.
+#  For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting house 1
+#  with color green, and so on... Find the minimum cost to paint all houses.
+
+# A DP problem
+# instead of deciding color of 'i-1' and then moving to decide the color of 'i', we will decide the color of'i' and for each
+# choice add the minimum of the remaining two colors of 'i-1' to it
+# We will use the costs[][] to keep track of cumulative costs of painting eg costs[3][1] will be the total cost of painting
+# house 3 with blue + the cost of painting house 0,1,2 with the optimum color
+
+def paintHouses(costs):
+    if len(costs) == 0:
+        return 0
+
+    for i in range(len(costs)):
+        # Paint the current house red, total cost of painting it red is the sum of the cost +min(cost of paint of previous house)
+        costs[i][0] += min(costs[i-1][1], costs[i-1][2])
+        # same logic for the other two colors
+        costs[i][1] += min(costs[i-1][0], costs[i-1][2])
+        costs[i][2] += min(costs[i-1][0], costs[i-1][1])
+    # Now return the minimum of the three costs stored at the last element of costs
+    last_house = len(costs)-1
+    return min(min(costs[last_house][0], costs[last_house][1]), costs[last_house][2])
+
+
+# Q. Given a nested list of integers, return the sum of all integers in the list weighted by their depth.
+# Each element is either an integer, or a list -- whose elements may also be integers or other lists.
+# Example 1:
+# Given the list [[1,1],2,[1,1]], return 10. (four 1's at depth 2, one 2 at depth 1)
+
+def sumDepth(array):
+    depth = 1
+    sum_array = 0
+    sumDepthUtil(array, depth, sum_array)
+    return sum
+
+def sumDepthUtil(array, depth, sum_array):
+    if len(array) == 0:
+        return
+
+    for element in array:
+        if type(element) is type([]):
+            sumDepthUtil(element, depth+1, sum_array)
+        else:
+            sum_array = sum_array + element*depth
+
+# Q. Different version of the above question :
+# From the previous question where weight is increasing from root to leaf, now the weight is defined from bottom up.
+# i.e., the leaf level integers have weight 1, and the root level integers have the largest weight.
+# Example 1:
+# Given the list [[1,1],2,[1,1]], return 8. (four 1's at depth 1, one 2 at depth 2)
+
+# PREDEFINED INTERFACE
+#class NestedInteger(object):
+#    def isInteger(self):
+#        """
+#        @return True if this NestedInteger holds a single integer, rather than a nested list.
+#        :rtype bool
+#        """
+#
+#    def getInteger(self):
+#        """
+#        @return the single integer that this NestedInteger holds, if it holds a single integer
+#        Return None if this NestedInteger holds a nested list
+#        :rtype int
+#        """
+#
+#    def getList(self):
+#        """
+#        @return the nested list that this NestedInteger holds, if it holds a nested list
+#        Return None if this NestedInteger holds a single integer
+#        :rtype List[NestedInteger]
+#        """
+
+# O(n)
+# 1. maintain two stacks. first to keep all the elements of the list and the other denoting their levels
+# 2. We pop the top element from the first stack and check :
+#       a) if it is an integer then we add it to a dictionary with key=level and value=list of all integers on that level
+#       b) if it is a list then we go through all its elements and push them in stack with the respective levels
+# 3. This continues till the stack is empty
+
+def depthSum(array):
+    if len(array) == 0:
+        return 0
+    # dictionary to hold the values at a certain level
+    import collections
+    dictionary = collections.defaultdict(list)
+
+    # Two stacks
+    elements = []
+    levels = []
+
+    # 1st iteration to put every element in the outer most array in the stack and assign each element level 1
+    for element in array:
+        elements.append(element)
+        levels.append(1)
+
+    # Run the loop till stack is empty(meaning every entity inside is an integer
+    while len(elements) != 0:
+        # get the top most element and its level
+        e = elements.pop()
+        l = levels.pop()
+
+        # variable to keep track of the maximum level we reach
+        max_level = max(max_level, l)
+
+        # If the element is an integer then add it to the corresponding layer in the dictionary
+        if type(e) is type(int):
+            dictionary[l].append(e)
+
+        # Otherwise push the elements of the list to teh stack and increment their level by 1
+        else:
+            for ni in e:
+                elements.append(ni)
+                levels.append(l+1)
+    result = 0
+    for i in reversed(range(1, max_level+1))
+        for num in dictionary[i]:
+            result = result + num*(max_level+1-i)
+
+    return result
+
 
