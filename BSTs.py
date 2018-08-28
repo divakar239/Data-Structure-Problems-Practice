@@ -182,6 +182,15 @@ class bst:
 
     # To check if two trees are identical, compare the inorder and preorder traversals of both trees
 
+# Q. Check if two trees are symmetric O(n)
+def checkSymmetry(root1, root2):
+    if root1 is None and root2 is None:
+        return True
+    if root1 is None or root2 is None:
+        return False
+    return root1.data == root2.data and checkSymmetry(root1.left, root2.right) and checkSymmetry(root1.right, root2.left)
+
+
 ##### BSTs #####
 
 # Q1. Find inorder successor and predecessor of target in BST
@@ -1024,3 +1033,41 @@ def fliptree(root):
 
     # return the new tree
     return flippednode
+
+
+# Q. Given a binary tree, collect a tree's nodes as if you were doing this: Collect and remove all leaves, repeat until the tree is empty.
+
+# Example:
+# Given binary tree
+#
+#           1
+#          / \
+#         2   3
+#        / \
+#       4   5
+# Returns [4, 5, 3], [2], [1].
+
+# Approach: Carry out a dfs and add all the nodes at the same height in an array O(n)
+
+def getLeaves(root):
+    result = [] #this will be the final list of lists which will be the output
+    getLeavesUtil(root, result)
+    return result
+
+def getLeavesUtil(root, result):
+    if root is None:
+        return -1  # end condition; return -1
+
+    left_height = getLeavesUtil(root.left, result)
+    right_height = getLeavesUtil(root.right, result)
+    curr_height = max(left_height, right_height) + 1
+
+    # This ensures that all the nodes at the same height end uo in the same array; A new array is added to result when the curr_height is changed
+    if len(result) < curr_height:
+        result.append([])
+
+    # This line adds every node with the same height (curr_height) into the same array
+    result[curr_height].append(root)
+
+    # Since height controls the creation of the result array, the function returns the curr_height
+    return curr_height

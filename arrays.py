@@ -762,4 +762,92 @@ def depthSum(array):
 
     return result
 
+# Q. Given two sorted lists, merge them so as to produce a combined sorted list (without using extra space).
+# Examples:
+# Input : head1: 5->7->9
+#         head2: 4->6->8
+# Output : 4->5->6->7->8->9
+#
+# Input : head1: 1->3->5->7
+#         head2: 2->4
+# Output : 1->2->3->4->5->7
+
+# Recursion
+def merge(head1, head2):
+    # end conditions
+    if head1 is None:
+        # point the last node of the first list to the second list's node as first list has ended
+        return head2
+    if head2 is None:
+        # point the last node of the second list to the first list's node as second list has ended
+        return head1
+
+    # recursion : start with the lsit with smallest value
+    if head1.data <= head2.data:
+        head1.next = merge(head1.next, head2)
+        return head1
+    else:
+        head2.next = merge(head1, head2.next)
+        return head2
+
+# Q. Given K sorted linked lists of size N each, merge them and print the sorted output.
+# Example:
+# Input: k = 3, n =  4
+# list1 = 1->3->5->7->NULL
+# list2 = 2->4->6->8->NULL
+# list3 = 0->9->10->11
+# Output:
+# 0->1->2->3->4->5->6->7->8->9->10->11
+
+# Approach 1: O((nk)^2)
+# Initialize result as first list. Now traverse all lists starting from second list
+# Insert every node of currently traversed list into result in a sorted way
+
+# Approach 2: O(nk Log k)
+# A Better solution is to use Min Heap
+# Create a min heap os all the elements of all the lists and then just keep popping the top most element from it
+
+# Approach 3: O(nk logk) but space O(1)  : outer loop runs logk times and merge is linear
+# The above function merge(head1, head2) merges two sorted lists in O(n) time and O(1) space
+# So, create pairs out of the K lists and merge each pair in O(n)
+
+def mergeLists(array_of_lists):
+    last = len(array_of_lists)
+
+    while last != 0:
+        i = 0
+        j = last
+        while i<j:
+            array_of_lists[i] = merge(array_of_lists[i], array_of_lists[j])
+            i = i + 1
+            j = j - 1
+
+            # Once i exceeds j , it is time to reset i and j using last as it means that half of the lists have been sorted
+            if i>=j:
+                last = j
+    return array_of_lists[0]
+
+# Q. You are a professional robber planning to rob houses along a street.
+#  Each house has a certain amount of money stashed, the only constraint stopping you from robbing each of them is that
+#  adjacent houses have security system connected and it will automatically contact the police if two
+#  adjacent houses were broken into on the same night.
+# Given a list of non-negative integers representing the amount of money of each house,
+# determine the maximum amount of money you can rob tonight without alerting the police.
+
+# Approach : DP : O(n)
+# for 1 house we choose that house
+# for 2 houses we choose max(1st, 2nd)
+# for three houses a) either 1st+3rd b) or 2nd   =>  max(a,b)
+
+def maxMoney(array_of_houses):
+    # base cases
+    prev_max = 0 # the maximum amount collected till the current house
+    curr_max = 0 # the maximum amount collected at the current house
+
+    for house in array_of_houses:
+        temp_amount = curr_max
+        curr_max = max(prev_max+house, curr_max)
+        prev_max = temp_amount
+
+    return curr_max
 
