@@ -177,7 +177,7 @@ MatchResult = collections.namedtuple('MatchResult',('winning_team','losing_team'
 
 def can_a_beat_b(matches,a,b):
     def build_graph():
-        graph = default.dict(set)
+        graph = collections.defaultsdict(set)
         for match in matches:
             graph[match.winning_team].append(match.losing_team)
     return graph
@@ -205,17 +205,14 @@ def can_a_beat_b(matches,a,b):
     while(stack):
         node = stack.pop()
         for next,weight in graph[node]:
-            if dist[next] > dist[node] + weight:
-                dist[next] = dist[node] + weight
-
+            dist[next] = min(dist[next], dist[next] + weight)
 #For Single Source Longest Path:
     dist = [float("-inf")]*len(graph)
     dist[s] = 0
     while(stack):
         node = stack.pop()
         for next,weight in graph[node]:
-            if dist[next] < dist[node] + weight:
-                dist[next] = dist[node] + weight
+            dist[next] = max(dist[next], dist[next] + weight)
 
         
 # NOTE: since we start with the source and the distance of the source is never INF, due to topological sort dist[i] will never be INF
@@ -337,7 +334,7 @@ def minDistance2D(grid2D):
     meetPoint = (row, col)
 
     dist = (minDistance1D(rows, row) + minDistance1D(cols, col))
-    return dist
+    return (dist, meetPoint)
 
 #Q You are given a m x n 2D grid initialized with these three possible values.
 
@@ -365,12 +362,13 @@ def minDistance2D(grid2D):
 
 def wallsAndGates(matrix):
     directions = [(1,0), (-1,0), (0,1), (-1,0)]   #the permitted directions we can move from a point (row(x-axis), col(y-axis))
+    visited = collections.defaultdict(bool)
     EMPTY = float("INF")
     GATE = 0
     WALL = -1
-    bfs(matrix, directions)
+    bfs(matrix, directions, visited)
 
-def bfs(matrix, directions):
+def bfs(matrix, directions, visited):
     rows = len(matrix)
     cols = len(matrix[0])
     q = []
@@ -378,18 +376,19 @@ def bfs(matrix, directions):
     for row in rows:
         for col in cols:
             if matrix[row][col] == GATE:
+
                 q.append((row, col))
     #loop to carry out bfs from gates
     while len(q) != 0:
         e = q.pop()
         x = e[0]
         y = e[1]
-
+        visited[e] = True
         for d in directions:
             r = x + d[0]
             c = y + d[1]
             #if the traversing takes us to non-empty or out of bounds then try again with another direction
-            if r<0 || c<0 || r>=rows || c>=cols || matrix[r][c] != EMPTY:
+            if r<0 || c<0 || r>=rows || c>=cols || matrix[r][c] != EMPTY || visited[(r,c)] is True:
                 continue
             #if we are within bounds and land on an empty space record the distance from the point from where we moved
             matrix[r][c] = matrix[x][y] + 1
@@ -397,8 +396,11 @@ def bfs(matrix, directions):
             q.append((r,c))
 
 
-# Q. Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.) You may assume all four edges of the grid are surrounded by water.
-# Count the number of distinct islands. An island is considered to be the same as another if they have the same shape, or have the same shape after rotation (90, 180, or 270 degrees only) or reflection (left/right direction or up/down direction).
+# Q. Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical.)
+# You may assume all four edges of the grid are surrounded by water.
+# Count the number of distinct islands.
+# An island is considered to be the same as another if they have the same shape,
+# or have the same shape after rotation (90, 180, or 270 degrees only) or reflection (left/right direction or up/down direction).
 #
 # Example 1:
 # 11000
@@ -449,8 +451,10 @@ def bfs(matrix, directions):
 # Afterwards, we will rotate and reflect the coordinates about the origin and translate the shape so that the bottom-left-most coordinate is (0, 0). At the end, the smallest of these lists coordinates will be the canonical representation of the shape.
 # Algorithm
 # We feature two different implementations, but the core idea is the same. We start with the code from the previous problem, Number of Distinct Islands.
-# For each of 8 possible rotations and reflections of the shape, we will perform the transformation and then translate the shape so that the bottom-left-most coordinate is (0, 0). Afterwards, we will consider the canonical hash of the shape to be the maximum of these 8 intermediate hashes.
-# In Python, the motivation to use complex numbers is that rotation by 90 degrees is the same as multiplying by the imaginary unit, 1j. In Java, we manipulate the coordinates directly. The 8 rotations and reflections of each point are (x, y), (-x, y), (x, -y), (-x, -y), (y, x), (-y, x), (y, -x), (-y, -x)
+# For each of 8 possible rotations and reflections of the shape, we will perform the transformation and then translate the shape so that the bottom-left-most coordinate is (0, 0).
+# Afterwards, we will consider the canonical hash of the shape to be the maximum of these 8 intermediate hashes.
+# In Python, the motivation to use complex numbers is that rotation by 90 degrees is the same as multiplying by the imaginary unit, 1j.
+# In Java, we manipulate the coordinates directly. The 8 rotations and reflections of each point are (x, y), (-x, y), (x, -y), (-x, -y), (y, x), (-y, x), (y, -x), (-y, -x)
 
 def numIslands(grid):
     visited = set() # keep track of visited vertices
@@ -479,9 +483,9 @@ def canonical(shape):
     ans = None
     for k in range(4):
         # K represents the number of rotation i.e. by being applied as an exponent to 1j
-        ans = max(ans, translate([z * (1j) ** k for z in shape]))  #the argument of translate causes teh rotation on the original points
+        ans = max(ans, translate([z * (1j) ** k for z in shape]))  #the argument of translate causes the rotation on the original points
         ans = max(ans, translate([complex(z.imag, z.real) * (1j) ** k for z in shape])) # the argument of translate flips the original points and then causes the rotation
-    return tuple(ans)
+    return tuple(ans) #has all the points of either z or complex(z.imaginary, z.real) as a tuple eg (1,2,3,...). So, whichever is max is returned as ans
 
 
 def translate(shape):
@@ -553,7 +557,7 @@ def killPID(pid, ppid, kill):
 # Ensure the remained person is celebrity.
 
 # Steps
-# Push all the celebrities into a stack.
+# Push all the people into a stack.
 # Pop off top two persons from the stack, discard one person based on return status of HaveAcquaintance(A, B).
 # Push the remained person onto stack.
 # Repeat step 2 and 3 until only one person remains in the stack.

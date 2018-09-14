@@ -50,12 +50,12 @@ class bst:
         if root == None:
             return
         if root.right != None:
-            self.reverse_inorder(root.right,k)
+            self.reverse_inorder(root.right,k,count)
         if count>=k:
             return
         print(root.data)
         if root.left != None:
-            self.reverse_inorder(root.left,k)
+            self.reverse_inorder(root.left,k,count)
    
 #Inorder : iteration
     def inorder_iteration(self):
@@ -171,12 +171,12 @@ class bst:
     def mirror(node):
         if node == None:
             return node
-        else:
-            ltree = mirror(node.left)
-            rtree = mirror(node.right)
-       node.left = rtree
-       node.right = ltree
-       return node
+
+        ltree = mirror(node.left)
+        rtree = mirror(node.right)
+        node.left = rtree
+        node.right = ltree
+        return node
     
     #Approach 2: reverse the inorder of the tree and get the preorder of the tree; use these to reconstruct a tree
 
@@ -239,45 +239,33 @@ def successor_predecessor(node,target):
         predecessor = node
         successor_predecessor(node.right,target)
 
-# the above question in separate parts
-def successor(root, target):
-    node = root
-    if target.right != None:
-        temp = target.right
-        while temp != None:
-            temp = temp.left
-        return temp
-    else:
-        if node.data > target.data:
-            # When the target has no right subtree and is in the kleft subtree of the root , then the root is the successor
-            return node
-        if node.data < target.data:
-            # If the target is the right subtree, then the parent is the successor
-            return successor(node.right, target)
-
-def predecessor(root, target):
-    # everything is the opposite of successor()
-    node = root
-    if target.left != None:
-        temp = target.left
-        while temp != None:
-            temp = temp.right
-        return temp
-    else:
-        if node.data > target.data:
-            return predecessor(node.left, target)
-        if node.data < target.data:
-            return node
+# imp review
+def inorder_successor(root, target):
+    if target.right:
+        node = target.right
+        while node != None:
+            node = node.left
+        return node
+    s = None
+    while root is not None:
+        if target.data < root.data:
+            s = root
+            root = root.left
+        elif target.data > root.data:
+            root = root.right
+        else:
+            break
+    return s
 
 
-#Delete a node in binary search tree
+#Delete a node in binary search tree O(n)
 def delete_node(root,target):
     if root == None:
         return None
     if target.data < root.data:
-        left = delete_node(root.left,target.right)
+        root.left = delete_node(root.left,target.right)
     elif target.data > root.data:
-        right = delete_node(root.right,target)
+        root.right = delete_node(root.right,target)
     else:
         if root.left == None:
             temp = root.right
@@ -291,8 +279,10 @@ def delete_node(root,target):
             temp = min_tree(root.right)   #find min value of the right subtree
             root.data = temp.data
             root.right = delete_node(root.right,target)
+    return root
             
-#Q. Given a binary search tree and a target value K. The task is to find the node with minimum absolute difference with given target value K.
+#Q. Given a binary search tree and a target value K.
+# The task is to find the node with minimum absolute difference with given target value K.
 def getClosestNode(root, target_val):
     if root is None:
         return None
@@ -317,7 +307,7 @@ def getClosestNodeUtil(root, target_val, min_val, min_node):
     if target_val > root.data:
         getClosestNodeUtil(root.right, target_val, min_val, min_node)
 
-#Q. Largest BSt subtree where largest means number of nodes
+#Q. Largest BST subtree, where largest means maximum number of nodes
 
 # Data structure to hold multiple values for every node
 class NodeValue:
@@ -380,10 +370,6 @@ def make_tree():
     
     
 #Given a BINARY TREE, print all root-to-leaf paths: time complexity O(n^2), space complexity O(n)
-# the time complexity is O(n + lh) where 'n' is the time to go through every node and 'h' is the length of the array that is used to store the path. 'l' is the number of times the array is printed
-# if the tree is a list then l=1 and h=n => we get O(n+n) = O(n)
-# if the tree is perfectly balanced then l=n/2 and h=log(n) => O(n+nlogn) = O(nlogn)
-
 def tree_paths(node,n):
     path=[]
     return tree_paths_util(node,path,0)
@@ -405,31 +391,27 @@ def tree_path_util(node,arr,pathlen):
 # before printing the elements in "if node.left == None and node.right == None: add elements and compare with sum.
 
 ###############################################################################
-# Sum all the root to leaf paths
+# Sum all the root to leaf paths O(n) since we travel every node once
 
 def sum_paths(node):
-    curr_sum = 0
-    sum_paths_util(node,curr_sum)
+    sum = 0
+    sum_paths_util(node, sum)
+    return sum
 
 def sum_paths_util(node,sum):
     if node == None:
         return 
     sum = sum + node.data
-    if node.left == None and node.right == None:
-        return sum
-    else:
-        l_sum = sum_paths_util(node.left,sum)
-        r_sum = sum_paths_util(node.right,sum)
-        return l_sum + r_sum     #this adds all the paths
 
+    # Recurse on the children
+    sum_paths_util(node.left,sum)
+    sum_paths_util(node.right,sum)
 
 # maximum sum of root to leaf path
 # in the end condition of a leaf node, add the elements and compare with an int max, update max if max<sum
 # Another way of solving this problem, in O(1) space: 
 # Idea is to sum at every node till we hit a child, compare it with max and if mx<sum then store the leaf node
 def tree_max_sum_constant_space(node,n):
-    if node == None:
-        return 0
     curr_sum = 0
     max_val = float("-inf")                        #used to save the max sum of the paths
     target_leaf = None                 #will record the leaf node of the path with maximum sum
@@ -443,9 +425,10 @@ def tree_max_sum_constant_space_util(node,curr_sum,max_val):
         if max_val < curr_sum:
             max_val = curr_sum
             target_leaf = node
-    else:
-        tree_max_sum_constant_space_util(node.left,curr_sum,max_val)
-        tree_max_sum_constant_space_util(node.right,curr_sum,max_val)
+        curr_sum = curr_sum - node.data
+
+    tree_max_sum_constant_space_util(node.left,curr_sum,max_val)
+    tree_max_sum_constant_space_util(node.right,curr_sum,max_val)
 
 #This will print the path from the root to the leaf node. NOTE: this works on any binary tree, not just BSTs.
 #If a tree is not a BST we can't use the comparison property to print the ancestors i.e. path till the leaf node
@@ -458,27 +441,81 @@ def print_path(node,target_leaf):
     
 
 # add problem 2: given 'sum' find all paths that add upto 'sum', paths don't need to start at roots and end at leaves. but path should go downwards
-# before printing run method: that is find the continuous subarray in the path that adds upto sum; since the path is listed from parent tp child, it satisfies the go downwards property
-def cont_subarray_neg_sum_v2(array,sum):
-storage = collections.defaultdict(int)
-#index = 0
-curr_sum = 0
-for i in range (len(array)):
-    curr_sum = curr_sum + array[i]
-#The if statement below is true when the subarray starting from 0 to i adds up to sum
-    if(curr_sum == sum):
-        for k in range(0, i+1):
-            print(array[k])
-        return
-#The if statement below is true when subaaray from (curr_sum - sum) to i adds up to sum
-    elif(storage[curr_sum - sum] == 1):
-        for k in range (curr_sum-sum, i+1):
-            print(array[k])
-        return
-    storage[array[i]] = 1
-    #index = i
-print("No subarray found")
-        
+# # before printing run method: that is find the continuous subarray in the path that adds upto sum; since the path is listed from parent tp child, it satisfies the go downwards property
+# def cont_subarray_neg_sum_v2(array,sum):
+# storage = collections.defaultdict(int)
+# #index = 0
+# curr_sum = 0
+# for i in range (len(array)):
+#     curr_sum = curr_sum + array[i]
+# #The if statement below is true when the subarray starting from 0 to i adds up to sum
+#     if(curr_sum == sum):
+#         for k in range(0, i+1):
+#             print(array[k])
+#         return
+# #The if statement below is true when subaaray from (curr_sum - sum) to i adds up to sum
+#     elif(storage[curr_sum - sum] == 1):
+#         for k in range (curr_sum-sum, i+1):
+#             print(array[k])
+#         return
+#     storage[array[i]] = 1
+#     #index = i
+# print("No subarray found")
+#
+
+# Given a binary tree and a sum, determine if the tree has a root-to-leaf path such that adding up all the values along the path equals the given sum.
+
+# Note: A leaf is a node with no children.
+#
+# Example:
+#
+# Given the below binary tree and sum = 22,
+#
+#       5
+#      / \
+#     4   8
+#    /   / \
+#   11  13  4
+#  /  \      \
+# 7    2      1
+# return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22.
+
+# Approach:
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+class Solution:
+    def hasPathSum(self, root, sum):
+        """
+        :type root: TreeNode
+        :type sum: int
+        :rtype: bool
+        """
+        pathSum = 0
+        return self.hasPathSumUtil(root, sum, pathSum)
+
+    def hasPathSumUtil(self, root, sum, curr_sum):
+        if root is None:
+            return False
+        curr_sum = curr_sum + root.val
+        print(curr_sum)
+        if root.left is None and root.right is None:
+
+            if curr_sum == sum:
+                print('True')
+                return True
+            else:
+                curr_sum = curr_sum - root.val
+        l = self.hasPathSumUtil(root.left, sum, curr_sum)
+        r = self.hasPathSumUtil(root.right, sum, curr_sum)
+        return l or r
+
+
+
 
 # Problem: Given a binary tree, find the maximum path sum. The path may start and end at any node in the tree.
 # Approach:Starting from a node there are 4 ways a path can go :
@@ -1071,3 +1108,79 @@ def getLeavesUtil(root, result):
 
     # Since height controls the creation of the result array, the function returns the curr_height
     return curr_height
+
+# Q. Given a binary tree, print it vertically. The following example illustrates vertical order traversal.
+#
+#            1
+#         /    \
+#        2      3
+#       / \    / \
+#      4   5  6   7
+#              \   \
+#               8   9
+#
+#
+# The output of print this tree vertically will be:
+# 4
+# 2
+# 1 5 6
+# 3 8
+# 7
+# 9
+
+# Approach 1: Find the min and max horizontal distance wrt root : O(w*n) where w=width of the tree but worst case is when w=n -> O(n^2)
+# Then iterate through each line number and print the node in that line
+
+def findMinMaxHdist(root, min_dist, max_dist, dist):
+    if root is None:
+        return
+
+    if min_dist > dist:
+        min_dist = dist
+    if max_dist < dist:
+        max_dist = dist
+
+    findMinMaxHdist(root.left, min_dist, max_dist, dist - 1)
+    findMinMaxHdist(root.right, min_dist, max_dist, dist + 1)
+
+def printLine(root, num_line, dist = 0):
+    if root is None:
+        return
+
+    if num_line == dist:
+        print(root.data)
+
+    printLine(root.left, num_line, dist - 1)
+    printLine(root.right, num_line, dist + 1)
+
+def verticalLine(root):
+    min_dist = float('inf')
+    max_dist = float('-inf')
+    findMinMaxHdist(root, min_dist, max_dist, 0)
+
+    for line in range(min_dist, max_dist+1):
+        printLine(root, line, 0)
+
+# Approach 2: the above method is quadratic due to printLine
+# use a dictionary to store the value of every node and it''s horizontal distance
+# key: horizontal distance  Value: list of all nodes at that distance
+
+def verticalNodes(root):
+    import collections
+    dict = collections.defaultdict(list)
+    verticalNodesutil(root, dict, 0)
+    for keys in dict.keys():
+        print dict[key]
+
+def verticalNodesutil(root, dict, dist):
+    if root is None:
+        return
+    # Add the current root at the horizontal distance to the dictionary
+    dict[dist].append(root)
+
+    # Recurse
+    verticalNodesutil(root.left, dict, dist - 1)
+    verticalNodesutil(root.right, dict, dist + 1)
+    
+
+

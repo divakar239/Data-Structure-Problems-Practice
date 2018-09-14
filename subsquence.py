@@ -772,5 +772,36 @@ class wordDistance:
                 j = j+1
         return min_distance
 
+# Q. Given a string s and a dictionary of words dict, determine if s can be segmented into a space-separated sequence of
+# one or more dictionary words.
 
+# For example, given
+# s = "leetcode",
+# dict = ["leet", "code"].
+#
+# Return true because "leetcode" can be segmented as "leet code".
 
+# Approach1 : Naive O(n^2)
+def wordBreakI(s, dict):
+    return wordBreakIUtil(s, dict, 0)
+
+def wordBreakIUtil(s, dict, start_pos):
+    # If only 1 charater
+    if start_pos == len(s):
+        return True
+    # Check every word in the dictionary
+    for word in dict:
+        length = len(word)
+        end_pos = start_pos + length
+        # If the end_pos is greater than the length of the string then the current word wasn't found and exit the loop to check for other words
+        if end_pos > len(s):
+            continue
+        # If the current word is found then recursively call function on the next position
+        if s[start_pos : end_pos+1] == word:
+            if wordBreakIUtil(s, dict, start_pos+length)
+                return True
+    return False
+
+# Approach 2: Assume the entire dictionary is entered into a trie
+# now at any given moment 'i' the string can be treated as two substrings s[0:i] and s[i:]
+# So, we search for s[0:i] in the trie and recursively call the function on s[i:]
