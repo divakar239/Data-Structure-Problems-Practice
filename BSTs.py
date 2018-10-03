@@ -375,9 +375,15 @@ def tree_paths(node,n):
     return tree_paths_util(node,path,0)
     
 def tree_path_util(node,arr,pathlen):
-    if node == None:
+    if node is None:
         return
-    arr[pathlen] = node.data
+
+    # Every time we hit a leaf, to ensure that the new element replaces the older leaf
+    if (len(arr) > pathlen):
+        arr[pathlen] = node.data
+    else:
+        arr.append(node.data)
+
     pathlen = pathlen + 1
     if node.left==None and node.right==None:
         for i in range(pathlen):
@@ -403,29 +409,40 @@ def sum_paths_util(node,sum):
         return 
     sum = sum + node.data
 
+    # Important to keep return the value of sum accumulated otherwise it is lost every time a function call ends
+    if node.left is None and node.right is None:
+        return sum
+
     # Recurse on the children
     sum_paths_util(node.left,sum)
     sum_paths_util(node.right,sum)
+
 
 # maximum sum of root to leaf path
 # in the end condition of a leaf node, add the elements and compare with an int max, update max if max<sum
 # Another way of solving this problem, in O(1) space: 
 # Idea is to sum at every node till we hit a child, compare it with max and if mx<sum then store the leaf node
-def tree_max_sum_constant_space(node,n):
-    curr_sum = 0
-    max_val = float("-inf")                        #used to save the max sum of the paths
-    target_leaf = None                 #will record the leaf node of the path with maximum sum
-    tree_max_sum_constant_space_util(node,curr_sum,max_val)
-    
-def tree_max_sum_constant_space_util(node,curr_sum,max_val):
+def tree_max_sum_constant_space_util(node,curr_sum):
     if node == None:
         return
+
     curr_sum = curr_sum + node.data
     if node.left == None and node.right == None:
-        if max_val < curr_sum:
-            max_val = curr_sum
-            target_leaf = node
-        curr_sum = curr_sum - node.data
+        if tree_max_sum_constant_space_util.max_val < curr_sum:
+            tree_max_sum_constant_space_util.max_val = curr_sum
+            tree_max_sum_constant_space_util.target_leaf = node
+
+def tree_max_sum_constant_space(node,n):
+    curr_sum = 0
+    # function name is important to create a static variable
+    tree_max_sum_constant_space_util.max_val = float("-inf")
+    tree_max_sum_constant_space_util.target_leaf = None
+
+    tree_max_sum_constant_space_util(node,curr_sum)
+    return tree_max_sum_constant_space_util.max_val
+    
+
+
 
     tree_max_sum_constant_space_util(node.left,curr_sum,max_val)
     tree_max_sum_constant_space_util(node.right,curr_sum,max_val)
@@ -502,14 +519,13 @@ class Solution:
         if root is None:
             return False
         curr_sum = curr_sum + root.val
-        print(curr_sum)
+
         if root.left is None and root.right is None:
 
             if curr_sum == sum:
                 print('True')
                 return True
-            else:
-                curr_sum = curr_sum - root.val
+
         l = self.hasPathSumUtil(root.left, sum, curr_sum)
         r = self.hasPathSumUtil(root.right, sum, curr_sum)
         return l or r
@@ -525,22 +541,24 @@ class Solution:
     #4. max of left subtree + node + max right sub tree
     
 def find_max_sum(node):
-    res = float("-inf")
-    find_max_sum_util(node, res)
-    return res
+    find_max_sum_util.final_result = float("-inf")
+    find_max_sum_util(node)
+
     
-def find_max_sum_util(node,res):
+def find_max_sum_util(node):
     if node == None:
         return 0
-    l_val = find_max_util(node.left,res)    #sum of the left tree
-    r_val = find_max_util(node.right,res)   #sum of the right tree
+    l_val = find_max_util(node.left)    #sum of the left tree
+    r_val = find_max_util(node.right)   #sum of the right tree
     
-    max_single_path = max(max(l_val,r_val) + node.data, node.data)
-    max_bw_single_and_leftToright = max(max_single_path, l_val + r_val + node.data)
-    
-    res = max(max_single_path, max_bw_single_and_leftToright) #final max value
-    
-    return max_single_path
+    sum1 = max(max(l_val, r_val)+node.data, node.data)
+    sum2 = max(sum1, l_val+r_val+node.data)
+
+    #Variable to store the value of the final sum
+    find_max_sum_util.final_sum = max(find_max_sum_util.final_sum, sum2)
+
+    # As we move up this the sum that will represent
+    return sum1
 
 # Print all ancestors/parents of a target node in a binary tree:
 def ancestors(node,target):
@@ -643,40 +661,43 @@ def invert(node):
 
 
 #Given a binary tree, write a program to count the number of Single Valued Subtrees.
-# A Single Valued Subtree is one in which all the nodes have same value. 
+#A Single Valued Subtree is one in which all the nodes have same value.
 #Expected time complexity is O(n).
 
 def count_singly(node):
-    count = 0
-    count_singly_util(node,count)
-    return count
+    count_singly_util.count = 0
+    count_singly_util(node)
+    return count_singly_util.count
+
     
-def count_singly_util(node,count):
-    if node == None:
+def count_singly_util(node):
+    if node is None:
         return True          #every leaf node is a singly so return true
     
     #recursively check for all left and right singly subtrees
-    lt = count_singly_util(node.left,count)
-    rt = count_singly_util(node.right,count)
+    lt = count_singly_util(node.left)
+    rt = count_singly_util(node.right)
     
     #if any of the subtrees is not singly then return false
     if lt == False or rt == False:
         return False
     
     #if both subtrees are singly, then check if the value of the root and the children are different -> false
-    if node.data != node.left.data:
+    if node.data != node.left.data:  #corresponds to lt which is a bool
         return False
         
-    if node.data != node.right.data:
+    if node.data != node.right.data: #corresponds to rt which is a bool
         return False
     
     #otherwise increment count and return true
-    count = count + 1
+    count_singly_util.count += 1
     return True
     
 
 #Q. Given a binary tree, find the length of the longest consecutive sequence path.
-# The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The longest consecutive path need to be from parent to child (cannot be the reverse).
+# The path refers to any sequence of nodes from some starting node to any node in the
+# tree along the parent-child connections.
+# The longest consecutive path need to be from parent to child (cannot be the reverse).
 
 # For example,
 #    1
@@ -700,18 +721,17 @@ def count_singly_util(node,count):
 # Approach 1: bottom-up like post order
 
 def longestConsecutive(root):
-    max = 0
+    dfs.maxlen = 0
+    dfs(root)
+    return dfs.maxlen
 
-    dfs(root, max)
-    return max
-
-def dfs(root, max):
+def dfs(root):
     #end condition
     if root is None:
         return 0
     #traverse the children
-    l = dfs(root.left, max) + 1
-    r = dfs(root.right, max) + 1
+    l = dfs(root.left) + 1
+    r = dfs(root.right) + 1
 
     #rewrite  children heights to 1 if their value is not the continuous successor of the root
     if l.data != root.data + 1:
@@ -721,8 +741,7 @@ def dfs(root, max):
 
     #consider max of the children
     length = max(l, r) + 1
-    if max<length:
-        max = length
+    dfs.maxlen = max(dfs.maxlen, length)
 
 # Q. Boundary of Binary Tree
 # Given a binary tree, return the values of its boundary in anti-clockwise direction starting from root.
@@ -824,7 +843,8 @@ def preorder(root, lb, rb, lfs, flag):
     preorder(root.left, lb, rb, lfs, isLeftChildFlag(root, flag))
     preorder(root.right, lb,rb, lfs, isRightChildFlag(root, flag))
 
-# Q. Given a binary tree with n nodes, your task is to check if it's possible to partition the tree to two trees
+# Q. Given a binary tree with n nodes, your task is to check if it's possible to partition
+# the tree to two trees
 # which have the equal sum of values after removing exactly one edge on the original tree.
 # Input:
 #     5
@@ -852,7 +872,7 @@ def preorder(root, lb, rb, lfs, flag):
 # record all the sums of subtrees in a hash map
 
 def checkSplit(root):
-    seen = []
+    seen = []  #arrays don't have the problem that variables do when passed to other functions
     total = sumTree(root, seen)
 
     # To deal with the case 0
@@ -870,7 +890,7 @@ def sumTree(root, seen):
     left_sum = sumTree(root.left, seen)
     right_sum = sumTree(root.right, seen)
 
-    # Adding the sum to the list
+    # Adding the sum of a subtree to the list
     seen.append(left_sum+right_sum+root.data)
 
     # The last sum in the list is the sum of the entire tree

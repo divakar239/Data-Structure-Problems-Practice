@@ -80,8 +80,8 @@ import collections
 
 def cont_subarray_neg_sum_v2(array,sum):
     storage = collections.defaultdict(int)
-    #index = 0
     curr_sum = 0
+
     for i in range (len(array)):
         curr_sum = curr_sum + array[i]
 #The if statement below is true when the subarray starting from 0 to i adds up to sum
@@ -145,6 +145,61 @@ def subsets(s):
     return ss_incl_h + ss_excl_h
 
 
+# Python program to print all
+# subset combination of n
+# element in given set of k element .
+
+# The main function that
+# prints all combinations
+# of size r in arr[]
+
+def subsets_size(arr, r):
+    # A temporary array to
+    # store all combination
+    # one by one
+    data = list(range(r))
+
+    # Print all combination
+    # using temporary
+    # array 'data[]'
+    subsets_size_util(arr, k, data, 0, 0)
+
+# arr[] ---> Input Array
+# data[] ---> Temporary array to
+#             store current combination
+# start & end ---> Staring and Ending
+#                  indexes in arr[]
+# index ---> Current index in data[]
+# r ---> Size of a combination
+#        to be printed
+def subsets_size_util(a, k, temp, index_data, index_arr):
+    # Current combination is
+    # ready to be printed,
+    # print it
+    if index_data == k:
+        for j in range(r):
+            print(data[j], end=" ")
+        print(" ")
+        return
+
+    # When no more elements
+    # are there to put in data[]
+    if index_arr >= len(a):
+        return
+
+    # current is included,
+    # put next at next
+    # location
+    data[index_data] = a[index_arr]
+    subsets_size_util(a, k, temp, index_data+1, index_arr+1)
+
+    # current is excluded,
+    # replace it with
+    # next (Note that i+1
+    # is passed, but index
+    # is not changed)
+    subsets_size_util(a, k, temp, index_data, index_arr+1)
+
 # Q1 Search an element in a rotated array
 #Input arr[] = {3, 4, 5, 1, 2}
 #Element to Search = 1
@@ -168,10 +223,10 @@ def subsets(s):
 #For example,
 #Given [100, 4, 200, 1, 3, 2],
 #The longest consecutive elements sequence is [1, 2, 3, 4] in time:O(n)
-# Approach : 1. Create a hash set to store all elements from constant lookup
+# Approach : 1. Create a hash set to store all elements for constant lookup
 # check if the element is the beginning of the sequence by checking if a[i] - 1 is present in the set
 # If the element is the first , then count number of elements in the consecutive starting with this element
-# if count is more than the current count then uodate the count
+# if count is more than the current count then update the count
 
 def consec_elem(a):
     s = set()
@@ -241,7 +296,7 @@ def find_min(a):
 #                              isSubsetSum (arr, n-1, sum/2 - arr[n-1])
 
 
-# This is step 2 of the solution
+# This is step 2 of the solution where n is the length of the array
 def find_partition_util(arr,n,sum):
     if sum == 0:
         return True
@@ -296,7 +351,7 @@ def longest_substring_v2(s):
         return 1
 
     for i in range(len(s)):
-        storage = set()             # initialising the set evrytime a new substring starts
+        storage = set()             # initialising the set everytime a new substring starts
         storage.add(s[i])           # always add the first element of the substring in the set when it starts
 
         for j in range(i+1, len(s)):
@@ -322,6 +377,7 @@ def longest_substring_v3(s):
             j += 1
         else:
             storage.remove(s[i])
+            i+=1
     return length
 
 # Q. find longest palindrome substring in a string
@@ -388,7 +444,9 @@ def remove_reverse(s):
 # Q. Check for balanced parenthesis
 # create dictionary: key = left parts and value = right parts
 # push all the left parts in a stack
-# for very right part 1.if the stack is empty means that it can't form a pair 2.the popped element popped doesn't match the corresponding value of the key in the storage dictionary
+# for every right part
+# 1.if the stack is empty means that it can't form a pair
+# 2.the popped element popped doesn't match the corresponding value of the key in the storage dictionary
 
 def check_parenthesis(s):
     left_chars = []
@@ -422,7 +480,7 @@ def add(s):
     return r
 
 
-    # NOTE: given a string 's', find the number of palindrome permtations of the string
+    # NOTE: given a string 's', find the number of palindrome permutations of the string
     # 1. check if any permutation of the string can be a palindrome i.e
         # if length is even , then count frequency of every character using a hash map; every character should occur even number of times
         # if length is odd, then only 1 char should be odd all the other should be even
@@ -494,8 +552,10 @@ def reverse_words(string):
 # Approach 1: Generate all the permutations which have len(word) and check if each of them is a palindrome
 
 #Approach 2: Smarter way of doing approach1 (backtracking)
-# 1. create the odd/even palindrome check function which checks if every permutation of the same length is indeed a permutation
-# 2. Now to create the permutations of say aabb, create a list of length 2 (half of 4) and add the distinct characters in it,
+# 1. create the odd/even palindrome check function which checks if every permutation of the same length is indeed
+#  a permutation
+# 2. Now to create the permutations of say aabb, create a list of length 2 (half of 4) and add the distinct
+# characters in it,
 # so it will contain 'a' and 'b'.
 # now create permutations of this new set and then add the reverse of it to its end; This prevents us from listing all unnecessary permutations which we know are not palindromes
 # eg perm = ab, now add reverse ba to its end. We get abba as the permutation
@@ -578,7 +638,8 @@ def reverseSentence(w):
     return a
 
 
-#Q. Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+#Q. Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd".
+#  We can keep "shifting" which forms the sequence:
 # "abc" -> "bcd" -> ... -> "xyz"
 # Given a list of strings which contains only lowercase alphabets, group all strings that belong to the same shifting sequence.
 #
@@ -594,7 +655,8 @@ def reverseSentence(w):
 
 # Approach: 1. abc, bcd, xyz belong to same group because the difference between the subsequent characters is the same
 # eg in abc, b-a = 1 and c-b = 1. Similarly, in xyz, y-x = 1and z-y = 1. So, abc and xyz belong to the same group
-# So, maintain a dictionary where key is the string of the difference and the value is the index of the word corresponding to that difference
+# So, maintain a dictionary where key is the string of the difference and the
+# value is the index of the word corresponding to that difference
 # Hence, dict["aa"] because 1=a, 2=b, ...will contain [abc,bcd,xyz] which are the words with 11 as the differeneces between the characters
 
 def differenceWord(word):
@@ -605,7 +667,7 @@ def differenceWord(word):
         if difference<0:
             difference = difference + 26
 
-        res = res + chr(difference) + 'a'
+        res = res + chr(difference + ord('a'))
     return res
 
 def groupWords(arr):
@@ -798,10 +860,78 @@ def wordBreakIUtil(s, dict, start_pos):
             continue
         # If the current word is found then recursively call function on the next position
         if s[start_pos : end_pos+1] == word:
-            if wordBreakIUtil(s, dict, start_pos+length)
+            if wordBreakIUtil(s, dict, start_pos+length):
                 return True
     return False
 
 # Approach 2: Assume the entire dictionary is entered into a trie
 # now at any given moment 'i' the string can be treated as two substrings s[0:i] and s[i:]
 # So, we search for s[0:i] in the trie and recursively call the function on s[i:]
+
+
+# Check if 's' is a substring of 't'
+# Approach 1: Naive O(n^2) two for loops checking every element of both strings
+# Approach 2: O(n) using hashing (Rabin Karp)
+
+def check_substring(t, s):
+    # No substring found as s is longer than t
+    if len(s) > len(t):
+        return -1
+
+    import functools
+    BASE = 26
+
+    # Hashes of first len(s) substring
+    # eg p has an initial value of 0 (as mentioned by third argument)
+    #p= (0xBASE) + first_char
+    #p= (pxBASE) + second _char where the p used is (0xBASE) + first_char; p keeps accumulating
+
+    hash_t = functools.reduce(lambda p, char: p*BASE + ord(char), t[:len(s)], 0)
+    hash_s = functools.reduce(lambda p, char: p*BASE + ord(char), s, 0)
+
+    # Needed for rolling hash; BASE raised to the highest index in s
+    pow_s = BASE**max(len(s) - 1, 0)
+
+    # Check the hashses, if tehy are equal then check the actual substring to be safe from hash collisions
+    for i in range(len(s),len(t)):
+        if hash_t == hash_s and t[i-len(s): i] == s:
+            return i-len(s)
+
+        # Rolling hash
+        hash_t -= ord(t[i-len(s)])*pow_s
+        hash_t = hash_t*BASE + ord(t[i])
+
+    if hash_t == hash_s and t[-len(s):] == s:
+        return len(t) - len(s)
+
+    # Not a substring
+    return -1
+
+# Another implementation
+
+def check_substring_v2(t,s):
+    if len(s) > len(t):
+        return False
+    BASE = 3 #Any prime number
+
+    # First set of hashes
+    s_hash = 0
+    for i in range(len(s)):
+        s_hash += ord(s[i])*(BASE**i)
+
+    t_hash = 0
+    for i in range(len(t)):
+        t_hash += ord(t[i])*(BASE**i)
+
+    # Iterate through t and compare substrings with s
+    for i in range(len(t)):
+        # Check for hash match and substring equality in case of hash match to avoid collisions
+        if t_hash == s_hash and t[i:i+len(s)] == s:
+            return True
+
+        # Rolling hash
+        t_hash -= ord(t[i])
+        t_hash = t_hash//BASE
+        t_hash += ord(t[i+1])*(BASE**(len(s)-1))
+    # if no match
+    return False

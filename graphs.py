@@ -482,7 +482,7 @@ def dfs(grid, visited, shape, r, c):
 def canonical(shape):
     ans = None
     for k in range(4):
-        # K represents the number of rotation i.e. by being applied as an exponent to 1j
+        # k represents the number of rotation i.e. by being applied as an exponent to 1j
         ans = max(ans, translate([z * (1j) ** k for z in shape]))  #the argument of translate causes the rotation on the original points
         ans = max(ans, translate([complex(z.imag, z.real) * (1j) ** k for z in shape])) # the argument of translate flips the original points and then causes the rotation
     return tuple(ans) #has all the points of either z or complex(z.imaginary, z.real) as a tuple eg (1,2,3,...). So, whichever is max is returned as ans
