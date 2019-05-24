@@ -35,6 +35,23 @@ def count_odd_even(a):
                 break
     return max
 
+# Approach 2: Sliding pointers O(n)
+def odd_even(arr):
+    l = 0
+    n = 1
+    c = 0
+    max_count = float('-inf')
+    while n < len(arr):
+        if arr[l] % 2 != arr[n] % 2:
+            c += 1
+            # print('in')
+        else:
+            c = 0
+        l += 1
+        n += 1
+        max_count = max(max_count, c)
+    return max_count + 1
+
 #Q Given an array of size n, the array contains numbers in range from 0 to k-1 where k is a positive integer and k <= n.
 # Find the maximum repeating number in this array in T:O(n) and S:O(1)
 
@@ -42,7 +59,7 @@ def count_odd_even(a):
 # Approach 2: run a for loop, maintain a hash map : T:O(n) S:O(n)
 # Approach 3: t: O(n) and S: O(1)
 
-# same idea can be used to segrgate odd and even numbers
+# same idea can be used to segregate odd and even numbers
 def max_frequency(a,k):
     #modify the array by adding adding k to the a[i]%k element: adding K will retain the original value of the value on value%k
     for i in range(0,len(a)):
@@ -53,12 +70,12 @@ def max_frequency(a,k):
     for i in range(0,len(a)):
         if max < a[i]:
             max = a[i]
-            index = 0
+            index = i
             #index of the max value is the most frequently appearing number in the array
     return index
             
         
-# Q Dutch Flag Partition problem: given a pivot arrange all elements of thearray< pivot at the start followed by all 
+# Q Dutch Flag Partition problem: given a pivot arrange all elements of the  array< pivot at the start followed by all
 #elements equal to the pivot followed by all the elements > pivot in time: O(n) and space: O(1)
 
 # Remember: the concept of partitioning from quicksort is very important as we can treat the array to have multiple
@@ -104,7 +121,7 @@ def add_one(a):
         a.append(0)
 # Variant: same can be used to solve adding two bit strings i.e the technique of changing the first element of the sum array is 2 then change it to 1 and append a 0 to the end.
 
-# Q. remove duplicates from a sorted array : time: O(n) and sapce: O(1)
+# Q. remove duplicates from a sorted array : time: O(n) and space: O(1)
 def remove_duplicates(a):
     j = 0
     for i in range(1,len(a)):
@@ -113,6 +130,19 @@ def remove_duplicates(a):
             j = j + 1
     a[j] = a[len(a) - 1]
     return a
+
+# if the array is not sorted
+def duplicates(arr):
+    d={}
+    l=[]
+    for num in arr:
+        d[num] = -1
+    for num in arr:
+        if d[num] == -1:
+            l.append(num)
+            d[num] = 1
+    return l
+
 
 #Q input an array denoting daily stock prices and return the maximum profit that 
 #can be made by buying and selling one share of that stock
@@ -185,7 +215,15 @@ def check_prime(n):
             return False
     return True
     
-# Print all prime numbers till k
+# Print all prime numbers till n : Sieve of eratosthenes O(sqrtnloglogn)
+def list_primes(n):
+    d=[True for i in rnage(n+1)]
+    p=2
+    while p*p<n:
+        if d[p] is True:
+            for i in range(p*2, n, p):
+                d[i] = False
+
 
 
 # remove element at key in space : O(1)
@@ -289,6 +327,17 @@ def smallest_sub(a,s):
             start += 1
     return min_len
        
+
+# Q. Sort a stack using temporary stack
+def sorted_stack(s):
+    temp_stack = []
+    while len(s) != 0:
+        temp = s.pop()
+        while len(temp_stack) != 0 and temp_stack[-1] > temp:
+            s.append(temp_stack.pop())
+        temp_stack.append(temp)
+    return temp_stack
+
 
 # Q. sort a stack in place that is using recursion
 def sort_stack(s):
@@ -394,13 +443,14 @@ def nextClosestTime(time):
 
 
 
-# Q. There is a garden with N slots. In each slot, there is a flower. The N flowers will bloom one by one in N days. In each day, there will be exactly one flower blooming and it will be in the status of blooming since then.
-#
-# Given an array flowers consists of number from 1 to N. Each number in the array represents the place where the flower will open in that day.
-#
-# For example, flowers[i] = x means that the unique flower that blooms at day i will be at position x, where i and x will be in the range from 1 to N.
-#
-# Also given an integer k, you need to output in which day there exists two flowers in the status of blooming, and also the number of flowers between them is k and these flowers are not blooming.
+# Q. There is a garden with N slots. In each slot, there is a flower. The N flowers will bloom one by one in N days.
+# In each day, there will be exactly one flower blooming and it will be in the status of blooming since then.
+# Given an array flowers consists of number from 1 to N. Each number in the array represents the place where the flower
+# will open in that day.
+# For example, flowers[i] = x means that the unique flower that blooms at day i will be at position x, where i and x
+# will be in the range from 1 to N.
+# Also given an integer k, you need to output in which day there exists two flowers in the status of blooming,
+# and also the number of flowers between them is k and these flowers are not blooming.
 #
 # If there isn't such day, output -1.
 # Input:
@@ -415,7 +465,8 @@ def nextClosestTime(time):
 # Output: -1
 
 # Approach 1: find min and max of the flower array. Those are the first and the last flowers.
-# Iterate through the array and check if  1) curr_flower - min - 1 == k  or 2) max - curr_flower - 1 == k for every entry in the active data structure
+# Iterate through the array and check if  1) curr_flower - min - 1 == k  or 2) max - curr_flower - 1 == k for every
+# entry in the active data structure
 
 def findMinMax(arr):
     # O(n)
@@ -430,9 +481,10 @@ def findMinMax(arr):
     ans = (min,max)
     return ans
 
-def emptySlots(flowers): #O(n^2) as for each flower added to acive we need to query min/max which is O(n)
-    # Active keeps track of the current blooming flower and allows us to check if the neighbors of that flower satisfy the condition
-    # we want active to be a sorted data structure but can also query min/max everytime on it for every new entry
+def emptySlots(flowers): #O(n^2) as for each flower added to active we need to query min/max which is O(n)
+    # Active keeps track of the current blooming flower and allows us to check if the neighbors of that flower satisfy
+    # the condition
+    # we want active to be a sorted data structure but can also query min/max every time on it for every new entry
     active = []
     day = 0
     for curr_flower in flowers:
@@ -641,7 +693,8 @@ class MaxStack:
 # The cost of painting each house with a certain color is different.
 # You have to paint all the houses such that no two adjacent houses have the same color.
 # The cost of painting each house with a certain color is represented by a n x 3 cost matrix.
-#  For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting house 1
+#  For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting
+#  house 1
 #  with color green, and so on... Find the minimum cost to paint all houses.
 
 # A DP problem
@@ -673,8 +726,7 @@ def paintHouses(costs):
 def sumDepth(array):
     depth = 1
     sum_array = 0
-    sumDepthUtil(array, depth, sum_array)
-    return sum
+    return sumDepthUtil(array, depth, sum_array)
 
 def sumDepthUtil(array, depth, sum_array):
     if len(array) == 0:
@@ -685,6 +737,7 @@ def sumDepthUtil(array, depth, sum_array):
             sumDepthUtil(element, depth+1, sum_array)
         else:
             sum_array = sum_array + element*depth
+    return sum_array
 
 # Q. Different version of the above question :
 # From the previous question where weight is increasing from root to leaf, now the weight is defined from bottom up.
@@ -823,8 +876,8 @@ def mergeLists(array_of_lists):
             j = j - 1
 
             # Once i exceeds j , it is time to reset i and j using last as it means that half of the lists have been sorted
-            if i>=j:
-                last = j
+        if i>=j:
+            last = j
     return array_of_lists[0]
 
 # Q. You are a professional robber planning to rob houses along a street.
@@ -839,15 +892,18 @@ def mergeLists(array_of_lists):
 # for 2 houses we choose max(1st, 2nd)
 # for three houses a) either 1st+3rd b) or 2nd   =>  max(a,b)
 
-def maxMoney(array_of_houses):
-    # base cases
-    prev_max = 0 # the maximum amount collected till the current house
-    curr_max = 0 # the maximum amount collected at the current house
+def maxMoney(array_of_houses, table):
+    if len(array_of_houses) == 0:
+        return 0
+    if len(array_of_houses) == 1:
+        return array_of_houses[1]
+    if len(array_of_houses) == 2:
+        return max(array_of_houses[0], array_of_houses[1])
 
-    for house in array_of_houses:
-        temp_amount = curr_max
-        curr_max = max(prev_max+house, curr_max)
-        prev_max = temp_amount
+    table[0] = array_of_houses[0]
+    table[1] = max(array_of_houses[0], array_of_houses[1])
+    for i in range(2, len(array_of_houses)):
+        table[i] = max(table[i-2] + table[i], table[i-1])
 
-    return curr_max
+    return table[-1]
 

@@ -449,12 +449,12 @@ def remove_reverse(s):
 # 2.the popped element popped doesn't match the corresponding value of the key in the storage dictionary
 
 def check_parenthesis(s):
-    left_chars = []
+    stack = []
     storage = {'(':')', '{':'}','[':']'}
     for char in s:
         if storage[char]:
-            left_chars.append(char)
-        elif storage[left_chars.pop()] != char or len(left_chars) == 0:
+            stack.append(char)
+        elif storage[stack.pop()] != char or len(stack) == 0:
             return False
     return True
 
@@ -932,6 +932,6 @@ def check_substring_v2(t,s):
         # Rolling hash
         t_hash -= ord(t[i])
         t_hash = t_hash//BASE
-        t_hash += ord(t[i+1])*(BASE**(len(s)-1))
+        t_hash += ord(t[i+len(s)])*(BASE**(len(s)-1))
     # if no match
     return False

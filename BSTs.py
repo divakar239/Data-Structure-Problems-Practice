@@ -168,15 +168,15 @@ class bst:
     
     #Approach 1: Mirror left sub tree and right sub tree; then swap the subtrees
     
-    def mirror(node):
-        if node == None:
-            return node
-
-        ltree = mirror(node.left)
-        rtree = mirror(node.right)
-        node.left = rtree
-        node.right = ltree
+def mirror(node):
+    if node == None:
         return node
+
+    ltree = mirror(node.left)
+    rtree = mirror(node.right)
+    node.left = rtree
+    node.right = ltree
+    return node
     
     #Approach 2: reverse the inorder of the tree and get the preorder of the tree; use these to reconstruct a tree
 
@@ -289,13 +289,14 @@ def getClosestNode(root, target_val):
 
     min_val = float("INF")
     min_node = None
-    getClosestNodeUtil(root, target_val, min_val, min_node)
-    return (min_val, min_node)
+    return getClosestNodeUtil(root, target_val, min_val, min_node)
+
 
 def getClosestNodeUtil(root, target_val, min_val, min_node):
     if root.data == target_val:
         min_val = 0
         min_node = root
+        return (min_val, min_node)
 
     # Updating the values
     if min_val > abs(root.data - target_val):
@@ -306,6 +307,7 @@ def getClosestNodeUtil(root, target_val, min_val, min_node):
         getClosestNodeUtil(root.left, target_val, min_val, min_node)
     if target_val > root.data:
         getClosestNodeUtil(root.right, target_val, min_val, min_node)
+    return (min_val, min_node)
 
 #Q. Largest BST subtree, where largest means maximum number of nodes
 
@@ -369,7 +371,8 @@ def make_tree():
     return t
     
     
-#Given a BINARY TREE, print all root-to-leaf paths: time complexity O(n^2), space complexity O(n)
+# Given a BINARY TREE, print all root-to-leaf paths: time complexity O(n^2),
+# space complexity O(n)
 def tree_paths(node,n):
     path=[]
     return tree_paths_util(node,path,0)
@@ -399,23 +402,21 @@ def tree_path_util(node,arr,pathlen):
 ###############################################################################
 # Sum all the root to leaf paths O(n) since we travel every node once
 
-def sum_paths(node):
-    sum = 0
-    sum_paths_util(node, sum)
-    return sum
+def sum_all_root_leaf_paths(root):
+    sums = []
+    curr_sum = 0
+    sum_all_root_leaf_paths_util(root,sums,0)
+    return sums[-1]
 
-def sum_paths_util(node,sum):
-    if node == None:
-        return 
-    sum = sum + node.data
-
-    # Important to keep return the value of sum accumulated otherwise it is lost every time a function call ends
-    if node.left is None and node.right is None:
-        return sum
-
-    # Recurse on the children
-    sum_paths_util(node.left,sum)
-    sum_paths_util(node.right,sum)
+def sum_all_root_leaf_paths(root, sums, curr_sum):
+    if root is None:
+        return
+    curr_sum += root.data
+    if root.left is None and root.right is None:
+        sums.append(curr_sum)
+        return
+    sum_all_root_leaf_paths_util(root.left, sums, curr_sum)
+    sum_all_root_leaf_paths_util(root.right, sums, curr_sum)
 
 
 # maximum sum of root to leaf path
@@ -427,10 +428,13 @@ def tree_max_sum_constant_space_util(node,curr_sum):
         return
 
     curr_sum = curr_sum + node.data
-    if node.left == None and node.right == None:
+    if node.left is None and node.right is None:
         if tree_max_sum_constant_space_util.max_val < curr_sum:
             tree_max_sum_constant_space_util.max_val = curr_sum
             tree_max_sum_constant_space_util.target_leaf = node
+
+    tree_max_sum_constant_space_util(node.left, curr_sum)
+    tree_max_sum_constant_space_util(node.right, curr_sum)
 
 def tree_max_sum_constant_space(node,n):
     curr_sum = 0
@@ -534,7 +538,7 @@ class Solution:
 
 
 # Problem: Given a binary tree, find the maximum path sum. The path may start and end at any node in the tree.
-# Approach:Starting from a node there are 4 ways a path can go :
+# Approach:Starting from a node there are 4 ways a path can go : O(n)
     #1. Node
     #2. max path through left subtree + node
     #3. max path through right subtree + node
@@ -571,7 +575,7 @@ def ancestors(node,target):
         return True
     return False
         
-# Check if a Binary Tree is balanced:
+# Check if a Binary Tree is balanced: O(n^2) as the height function is linear and is called for every node
     #1. check if the balance factor is <= 1
     #2. check if every left subtree is balanced
     #3. check if every right subtree is balanced
@@ -623,7 +627,7 @@ def check_balanced(node):
 # Find LCA of two nodes in a binary tree
 
 def LCA(root,x,y):
-    if root == None:
+    if root is None:
         return None
     #if any is equal to the root, then LCA is root
     if x.data == root.data or y.data == root.data:
@@ -742,7 +746,6 @@ def dfs(root):
     #consider max of the children
     length = max(l, r) + 1
     dfs.maxlen = max(dfs.maxlen, length)
-
 # Q. Boundary of Binary Tree
 # Given a binary tree, return the values of its boundary in anti-clockwise direction starting from root.
 # Boundary includes left boundary, leaves, and right boundary in order without duplicate nodes.
@@ -897,7 +900,8 @@ def sumTree(root, seen):
     return seen[-1]
 
 # Q. Construct a binary tree from a string consisting of parenthesis and integers.
-# The whole input represents a binary tree. It contains an integer followed by zero, one or two pairs of parenthesis.
+# The whole input represents a binary tree.
+# It contains an integer followed by zero, one or two pairs of parenthesis.
 # The integer represents the root’s value and a pair of parenthesis contains a child binary tree with the same structure.
 # Always start to construct the left child node of the parent first if it exists.
 
@@ -964,8 +968,10 @@ def getTree(string, start, end):
         root.right = getTree(string, index+2, end-1)
     return root
 
-# Q. Given a binary tree where every node has a unique value, and a target key k, find the value of the nearest leaf node to target k in the tree.
-# Here, nearest to a leaf means the least number of edges travelled on the binary tree to reach any leaf of the tree.
+# Q. Given a binary tree where every node has a unique value, and a target key k,
+# find the value of the nearest leaf node to target k in the tree.
+# Here, nearest to a leaf means the least number of edges travelled on the binary tree to reach
+# any leaf of the tree.
 # Also, a node is called a leaf if it has no children.
 # In the following examples, the input tree is represented in flattened form row by row.
 # The actual root tree given will be a TreeNode object.
@@ -1022,7 +1028,7 @@ def dfs(curr_node, par_node, graph):
         graph[curr_node].append(par_node)
         graph[par_node].append(curr_node)
 
-        # Recurse on the children of teh current node
+        # Recurse on the children of the current node
         dfs(curr_node.left, curr_node, graph)
         dfs(curr_node.right, curr_node, graph)
 
@@ -1048,15 +1054,18 @@ def bfs(target_node, graph, min_val, res):
                 visited[v] = True
                 distance[v] = distance[e] + 1
 
-            if len(graph[v]) == 0 and min > distance[v]:
+            if len(graph[v]) == 0 and min_val > distance[v]:
                 #This is a leaf node
                 min_val = distance[v]
                 res = v
-    return v
+    return res
 
 
 # Q. Binary Tree Upside Down
-# Given a binary tree where all the right nodes are either leaf nodes with a sibling (a left node that shares the same parent node) or empty, flip it upside down and turn it into a tree where the original right nodes turned into left leaf nodes. Return the new root.
+# Given a binary tree where all the right nodes are either leaf nodes with a sibling
+# (a left node that shares the same parent node) or empty, flip it upside down and turn it
+# into a tree where the original right nodes turned into left leaf nodes.
+# Return the new root.
 #
 # For example:
 # Given a binary tree {1,2,3,4,5},
@@ -1072,11 +1081,12 @@ def bfs(target_node, graph, min_val, res):
 #     / \
 #    3   1
 
-# Approach: O(n) worst condition is when the tree is a linked list where n is the number of nodes in it
+# Approach: O(n) worst condition is when the tree is a linked list where n is the number of nodes
+# in it
 def fliptree(root):
     # end conditions
-    if root is None:
-        return None
+    # if root is None:
+    #     return None
     if root.left is None and root.right is None:
         return root
 
@@ -1092,7 +1102,8 @@ def fliptree(root):
     return flippednode
 
 
-# Q. Given a binary tree, collect a tree's nodes as if you were doing this: Collect and remove all leaves, repeat until the tree is empty.
+# Q. Given a binary tree, collect a tree's nodes as if you were doing this:
+# Collect and remove all leaves, repeat until the tree is empty.
 
 # Example:
 # Given binary tree
@@ -1119,7 +1130,8 @@ def getLeavesUtil(root, result):
     right_height = getLeavesUtil(root.right, result)
     curr_height = max(left_height, right_height) + 1
 
-    # This ensures that all the nodes at the same height end uo in the same array; A new array is added to result when the curr_height is changed
+    # This ensures that all the nodes at the same height end up in the same array;
+    # A new array is added to result when the curr_height is changed
     if len(result) < curr_height:
         result.append([])
 
@@ -1148,7 +1160,8 @@ def getLeavesUtil(root, result):
 # 7
 # 9
 
-# Approach 1: Find the min and max horizontal distance wrt root : O(w*n) where w=width of the tree but worst case is when w=n -> O(n^2)
+# Approach 1: Find the min and max horizontal distance wrt root : O(w*n) where w=width of
+# the tree but worst case is when w=n -> O(n^2)
 # Then iterate through each line number and print the node in that line
 
 def findMinMaxHdist(root, min_dist, max_dist, dist):
@@ -1162,6 +1175,7 @@ def findMinMaxHdist(root, min_dist, max_dist, dist):
 
     findMinMaxHdist(root.left, min_dist, max_dist, dist - 1)
     findMinMaxHdist(root.right, min_dist, max_dist, dist + 1)
+    return (min_dist, max_dist)
 
 def printLine(root, num_line, dist = 0):
     if root is None:
@@ -1176,9 +1190,9 @@ def printLine(root, num_line, dist = 0):
 def verticalLine(root):
     min_dist = float('inf')
     max_dist = float('-inf')
-    findMinMaxHdist(root, min_dist, max_dist, 0)
+    res_range = findMinMaxHdist(root, min_dist, max_dist, 0)
 
-    for line in range(min_dist, max_dist+1):
+    for line in range(res_range[0], res_range[1]+1):
         printLine(root, line, 0)
 
 # Approach 2: the above method is quadratic due to printLine
@@ -1188,7 +1202,7 @@ def verticalLine(root):
 def verticalNodes(root):
     import collections
     dict = collections.defaultdict(list)
-    verticalNodesutil(root, dict, 0)
+    dict = verticalNodesutil(root, dict, 0)
     for keys in dict.keys():
         print dict[key]
 
@@ -1201,6 +1215,6 @@ def verticalNodesutil(root, dict, dist):
     # Recurse
     verticalNodesutil(root.left, dict, dist - 1)
     verticalNodesutil(root.right, dict, dist + 1)
-    
+    return dict
 
 

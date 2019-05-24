@@ -177,23 +177,23 @@ MatchResult = collections.namedtuple('MatchResult',('winning_team','losing_team'
 
 def can_a_beat_b(matches,a,b):
     def build_graph():
-        graph = collections.defaultsdict(set)
+        graph = collections.defaultdict(set)
         for match in matches:
             graph[match.winning_team].append(match.losing_team)
     return graph
     
-    def is_reachable_dfs(graph,curr,dest):
-        visited = set()
-        return is_reachable_dfs_util(curr,dest,visited)
+def is_reachable_dfs(graph,curr,dest):
+    visited = set()
+    return is_reachable_dfs_util(curr,dest,visited)
         
-    def is_reachable_dfs_util(curr,dest,visited):
-        if curr == dest:
-            return True
-        
-        visited[curr] == True
-        for i in graph[curr]:
-            if visited[i] == False:
-                return is_reachable_dfs_util(i,dest,visited)
+def is_reachable_dfs_util(curr,dest,visited):
+    if curr == dest:
+        return True
+
+    visited[curr] == True
+    for i in graph[curr]:
+        if visited[i] == False:
+            return is_reachable_dfs_util(i,dest,visited)
 
 #Single source shortest path of a DAG:
 #        1. Initialse the dist[] : SHORTEST PATH -> INF, LONGEST PATH -> -INF and source -> 0 ALWAYS
@@ -212,7 +212,7 @@ def can_a_beat_b(matches,a,b):
     while(stack):
         node = stack.pop()
         for next,weight in graph[node]:
-            dist[next] = max(dist[next], dist[next] + weight)
+            dist[next] = max(dist[next], dist[node] + weight)
 
         
 # NOTE: since we start with the source and the distance of the source is never INF, due to topological sort dist[i] will never be INF
