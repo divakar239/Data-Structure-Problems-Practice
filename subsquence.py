@@ -91,10 +91,10 @@ def cont_subarray_neg_sum_v2(array,sum):
             return
 #The if statement below is true when subaaray from (curr_sum - sum) to i adds up to sum
         elif(storage[curr_sum - sum] == 1):
-            for k in range (curr_sum-sum, i+1):
+            for k in range (storage[curr_sum-sum]+1, i+1):
                 print(array[k])
             return
-        storage[array[i]] = 1
+        storage[curr_sum] = i
         #index = i
     print("No subarray found")
 
