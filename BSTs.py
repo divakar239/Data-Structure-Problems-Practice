@@ -94,11 +94,26 @@ class bst:
                 stack.append(curr_node.right)
             if curr_node.left != None:
                 stack.append(curr_node.left)
+
 #Postorder : iteration
+def postorder_iteration(root):
+    stack = []
+    while True:
+        while root:
+            stack.push(root.right)
+            stack.push(root)
+            root = root.left
+        root = stack.pop()
+        if root.right and stack[0]==root.right:
+            stack.pop()
+            stack.push(root)
+            root = root.right
+        else:
+            print(root)
+            root = None
+        if len(stack) <= 0:
+            break
     
-        
-                                                                                                                                                                                                                                                                          
-            
 # Q3. Print the Lowest common ancestor of two given nodes:
 # Approach 1: Carry out a post order traversal, the LCA is the first node traversed after the two given nodes only if the two nodes are present in the same subtree O(n)
 
@@ -1217,4 +1232,50 @@ def verticalNodesutil(root, dict, dist):
     verticalNodesutil(root.right, dict, dist + 1)
     return dict
 
+# Q. Find sum of all right leaves in a given Binary Tree
+# Q. Find sum of all left leaves in a given Binary Tree
+# Q. Convert Binary Tree to a doubly linked list in place
+# Q. Remove half nodes from a binary tree
+# Q. Find the deepest node in a binary tree
 
+# Q. Evaluate an expression tree (binary tree)
+
+def evaluateTree(root):
+    if root == None:
+        return 0
+    if root.left == None and root.right == None:
+        return root
+    
+    # Get the nodes
+    left = evaluateTree(root.left)
+    right = evaluateTree(root.right)
+
+    # Concatenate with sign
+    if root.val == "+":
+        return left + root
+    if root.val == "*":
+        return left * right
+    if root.val == "/":
+        return left/right
+    if root.val == "-":
+        return left - root
+    
+# Q. Create an expression tree from a string
+
+def createExpression(expression):
+    stack = []
+    for exp in expression:
+        if exp not in ["+", "*", "-", "/"]:
+            node = TreeNode(exp)
+            stack.append(node)
+
+        else:
+            opNode = TreeNode(exp)
+            node1 = stack.pop()
+            node2 = stack.pop()
+
+            opNode.left = node1
+            opNode.right = node2
+            stack.append(opNode)
+    root = stack.pop()
+    return root

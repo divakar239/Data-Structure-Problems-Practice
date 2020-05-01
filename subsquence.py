@@ -144,6 +144,30 @@ def subsets(s):
     #print(type(ss_incl_h))
     return ss_incl_h + ss_excl_h
 
+# Largest Sum Contiguous Subarray
+#
+# Write an efficient program to find the sum of contiguous subarray within a one-dimensional array of numbers which
+# has the largest sum.
+# idea is to use curr_sum to sum up continuous elements and reset it to 0 if the sum ever becomes negative
+# use max_sum to compare only those subarrays with positive sums to choose the largest sum
+
+def largestContSum(arr):
+    curr_sum = 0
+    max_sum = 0
+    s = 0 # start point of the subarray with the largest sum
+    e = 0 # end of the subarray with the largest sum
+    for i in range(len(arr)):
+        curr_sum += arr[i]
+        if curr_sum < 0:
+            curr_sum = 0
+            s = i+1
+            continue
+
+        if max_sum < curr_sum:
+            max_sum = curr_sum
+        e = i
+    return max_sum
+
 
 # Python program to print all
 # subset combination of n
