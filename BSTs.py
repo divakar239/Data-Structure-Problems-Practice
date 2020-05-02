@@ -1279,3 +1279,33 @@ def createExpression(expression):
             stack.append(opNode)
     root = stack.pop()
     return root
+
+
+# Q. Count number of nodes in binary tree
+
+# Iterative
+
+def countNodes(root):
+    # Idea: Do a bfs
+    count = 0
+    q = []
+    q.append(root)
+
+    while q:
+        node = q.pop()
+        count += 1
+        if node.left:
+            q.append(node.left)
+        if node.right:
+            q.append(node.right)
+    
+    return count
+
+# Recursive:
+def countNodes(root):
+    if root == None:
+        return 0
+    
+    l = countNodes(root.left)
+    r = countNodes(root.right)
+    return l+r+1
