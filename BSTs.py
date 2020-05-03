@@ -1261,7 +1261,7 @@ def evaluateTree(root):
         return left - root
     
 # Q. Create an expression tree from a string
-
+# Only for postfix order eg ab+ef*g*-
 def createExpression(expression):
     stack = []
     for exp in expression:
@@ -1280,6 +1280,43 @@ def createExpression(expression):
     root = stack.pop()
     return root
 
+# Convert infix to postfix
+# The main function that converts given infix expression 
+    # to postfix expression 
+    def infixToPostfix(self, exp): 
+        # Iterate over the expression for conversion 
+        for i in exp: 
+            # If the character is an operand,  
+            # add it to output 
+            if self.isOperand(i): 
+                self.output.append(i) 
+              
+            # If the character is an '(', push it to stack 
+            elif i  == '(': 
+                self.push(i) 
+  
+            # If the scanned character is an ')', pop and  
+            # output from the stack until and '(' is found 
+            elif i == ')': 
+                while( (not self.isEmpty()) and self.peek() != '('): 
+                    a = self.pop() 
+                    self.output.append(a) 
+                if (not self.isEmpty() and self.peek() != '('): 
+                    return -1
+                else: 
+                    self.pop() 
+  
+            # An operator is encountered 
+            else: 
+                while(not self.isEmpty() and self.notGreater(i)): 
+                    self.output.append(self.pop()) 
+                self.push(i) 
+  
+        # pop all the operator from the stack 
+        while not self.isEmpty(): 
+            self.output.append(self.pop()) 
+  
+        print "".join(self.output) 
 
 # Q. Count number of nodes in binary tree
 
@@ -1309,3 +1346,18 @@ def countNodes(root):
     l = countNodes(root.left)
     r = countNodes(root.right)
     return l+r+1
+
+# Q.A binary tree is level order sorted (Each level is sorted). Find a given node. Could you do better than O(n). Eg. Could you find 10 in below eg faster than O(n)
+# The tree is complete and sorted by the left edge and right edge
+#          1
+#        /   \
+#      2      3     
+#     / \    / \
+#   8    9 10   11
+
+# Solution. Idea: 
+# 1. Traverse down the left edge to find which level will contain the the target O(height = log(n))
+# For eg, 10 is greater than 8 and there is no other level after that so it has to be in that level
+# For eg, 3 will be in the 2nd level as it less tahn 8
+# 2. Once we have the level number, we will use BFS to get that level's elements ->O(sum of all nodes till taht level)
+# 3. Call binary search on it Olog(num of elements in that row)                    
