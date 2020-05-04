@@ -656,3 +656,59 @@ def countSquares(matrix):
     denominator = 6 + (cols - rows)*rows*(rows+1)/2
     num_squares = numerator/denominator
         
+
+
+# Q. There are soldiers and civilians arranged in N x M matrix way, find out the 'K' weak rows in the matrix.
+# Weak rows are those where numbers of soldiers are less compare to other siblings row.
+# Soldiers are always stand in frontier, means always 1's may appear first and then 0's
+# 1 represents soldier
+# 0 represents civilian
+
+# ex:
+# K = 2
+# matrix = [
+# [1, 1, 1, 0, 0, 0]
+# [1, 1, 0, 0, 0, 0]
+# [1, 1, 1, 1, 0, 0]
+# [1, 1, 0, 0, 0, 0]
+# ]
+# here row 1 & 3 are weak rows since they have less numbers of 1's compare to row 0 & 2
+
+# discussed about the approach & also time & space complexity analysis
+
+# Solution:
+# Idea: We will maintain a min heap of tuples (index pf last 1 , array)
+# We use binary search to find the last index of 1 in each row
+# We then pop the first K elements out of the heap
+
+def helper(arr, k):
+    def get1(arr):
+        l, r = 0, len(arr)
+        while l < r:
+            m = (l+r)/2
+            if arr[m] == 0:
+                r = m
+            else:
+                l = m+1
+        return l
+    q = []
+    for i in range(len(arr)):
+        num = get1(arr[i])  #log(n)
+        heapq.heappush(q,(num,i)) #log(m)
+        # n*log(mn)
+    res = []
+    while k>0 and q:
+        res.append(heapq.heappop(q)[1]) #logm
+        k-=1
+    return res #n * log(mn) + k*logm
+
+arr = [
+[1, 1, 1, 0, 0, 0],
+[1, 1, 0, 0, 0, 0],
+[1, 1, 1, 1, 0, 0],
+[1, 1, 0, 0, 0, 0]
+]
+k = 2
+print(helper(arr, k))
+#time  --  O(n * log(mn) + k*logm)
+#space -- O(m)
