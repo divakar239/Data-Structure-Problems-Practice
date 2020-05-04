@@ -681,6 +681,9 @@ def countSquares(matrix):
 # We use binary search to find the last index of 1 in each row
 # We then pop the first K elements out of the heap
 
+# time -- O(n * log(mn) + k*logm)
+# space -- O(m)
+
 def helper(arr, k):
     def get1(arr):
         l, r = 0, len(arr)
@@ -712,3 +715,30 @@ k = 2
 print(helper(arr, k))
 #time  --  O(n * log(mn) + k*logm)
 #space -- O(m)
+
+
+# Q. Elevator has two buttons Up and Down , By pressing up elevator goes up by p floors and by pressing down it goes down by q floors. A building has n floors. Given a starting floor s, Can you explain if it's possible to go to floor e.
+# A. 
+def canReach(s, e, p, q, n):
+    visited = set()
+    while s != e:
+        if s in visited:
+            return False
+        else:
+            visited.add(s)
+            if s < e:
+                if s + p <= n:
+                    s += p
+                elif s - q >= 1:
+                    s -= q
+                else:
+                    False
+            else:
+                if s - q >= 1:
+                    s -= q
+                elif s + p <= n:
+                    s += p
+                else:
+                    False
+
+    return True
